@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  #include("head.vm")
+  
+  
+  <body>
+  <!-- head-->
+  #parse("body_1.vm")
+
+   <div class="container theme-showcase"><!-- /container  -->
+		<table class="table table-bordered table-hover">  
+              <caption>Cluster Info</caption>  
+              <thead>  
+                <tr>  
+                  <th>Cluster</th>  
+                  <th>Broker Details</th>  
+                </tr>  
+              </thead>  
+              <tbody>  
+				#foreach( $clusterBean in $clusterBeanList)
+					<tr>  
+						<td>$clusterBean.clusterName</td>  
+						<td>
+							<table class="table table-bordered table-hover">
+							<tbody >
+							#foreach($brokerBase in $clusterBean.brokerBaseSet)
+								<tr>
+                                    <td>$brokerBase.brokerName</td>
+									<td>
+										<table class="table table-bordered table-hover">
+											<tbody >
+												#foreach($brokerEntity in $brokerBase.brokerEntitySet)
+											<tr>
+                                                <td>bid</td>
+												<td>$brokerEntity.bid</td>
+                                            </tr>
+											<tr>
+												<td>addr</td>
+												<td>$brokerEntity.addr</td>
+                                            </tr>
+											<tr>
+												<td>version</td>
+												<td>$brokerEntity.version</td>
+                                            </tr>
+											<tr>
+												<td>inTPS</td>
+												<td>$brokerEntity.inTPS</td>
+                                            </tr>
+											<tr>
+												<td>outTPS</td>
+												<td>$brokerEntity.outTPS</td>
+											</tr>
+											<tr>
+												<td>inTotalYest</td>
+												<td>$brokerEntity.inTotalYest</td>
+                                            </tr>
+											<tr>
+												<td>outTotalYest</td>
+												<td>$brokerEntity.outTotalYest</td>
+                                            </tr>
+											<tr>
+												<td>inTotalToday</td>
+												<td>$brokerEntity.inTotalToday</td>
+                                            </tr>
+											<tr>
+												<td>outTotalToday</td>
+												<td>$brokerEntity.outTotalToday</td>
+                                            </tr>
+										#end
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+							#end
+							</tbody>
+                            </table>
+						</td>  
+					</tr>
+				#end
+              </tbody>  
+		</table>
+    </div> <!-- /container -->
+    #include("foot.vm")
+  </body>
+</html>

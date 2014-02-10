@@ -8,27 +8,27 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @RequestMapping("/topic")
 public class TopicAction {
 
-	@RequestMapping(value = "/index", method=RequestMethod.GET)
+	@RequestMapping(value = "/index.do", method=RequestMethod.GET)
 	public String index() {
 		return "topic/index";
 	}
 	
-	@RequestMapping(value = "/get", method=RequestMethod.GET)
+	@RequestMapping(value = "/get.do", method=RequestMethod.GET)
 	public String get() {
 		return "topic/index";
 	}
 	
-	@RequestMapping(value = "/put", method=RequestMethod.PUT)
+	@RequestMapping(value = "/put.do", method=RequestMethod.PUT)
 	public String put() {
 		return "topic/index";
 	}
 	
-	@RequestMapping(value = "/update", method=RequestMethod.POST)
+	@RequestMapping(value = "/update.do", method=RequestMethod.POST)
 	public String update() {
 		return "topic/index";
 	}
 	
-	@RequestMapping(value = "/delete", method = {RequestMethod.DELETE, RequestMethod.GET})
+	@RequestMapping(value = "/delete.do", method = {RequestMethod.DELETE, RequestMethod.GET})
 	public String delete() {
 		return "topic/index";
 	}
