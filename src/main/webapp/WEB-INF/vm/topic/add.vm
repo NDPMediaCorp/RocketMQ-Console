@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  #include("head.vm")
+  
+  <body>
+  <!-- head-->
+  #parse("body_1.vm")
+
+   <div class="container theme-showcase"><!-- /container  -->
+		<table class="table table-bordered table-hover">  
+              <tbody>  
+				<form action="update.do" method="post">
+					<tr>
+                       <td>BrokerAddr:</td>
+					   <td><input class="form-inline span2" type="text" placeholder="127.0.0.1:9876" name="brokerAddr"/></td>
+                    </tr>
+					<tr >
+					   <td>ClusterName:</td>
+					   <td><input class="form-inline span2" type="text" placeholder="defaultCluster" name="clusterName"/></td>
+                    </tr>
+					<tr >
+                       <td>TopicName:</td>
+					   <td><input class="form-inline span2" type="text" placeholder="topicName" name="topicName"/></td>
+                    </tr>
+					<tr >
+                       <td>ReadQueueNums:</td>
+					   <td><input class="form-inline span2" type="text" placeholder="8" name="readQueueNums"/></td>
+                    </tr>
+					<tr >
+                       <td>WriteQueueNums:</td>
+					   <td><input class="form-inline span2" type="text" placeholder="8" name="writeQueueNums"/></td>
+                    </tr>
+					<tr >
+                       <td>Permission(W|R|WR):</td>
+					   <td>
+						<select class="span2" name="perm">
+							<option value="W">W</option>
+                            <option value="R" >R</option>
+							<option value="WR" >WR</option>
+                        </select>
+					   </td>
+                    </tr>
+					<tr >
+                        <td colspan="2">
+							<center>
+								<button class="btn btn-success" type="submit" >Submit</button>
+                            </center>
+						</td>
+                    </tr>
+                </form>
+              </tbody>
+        </table>
+   </div>
+   #include("foot.vm")
+  </body>
+</html>

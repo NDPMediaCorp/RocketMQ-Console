@@ -7,7 +7,7 @@
        "
 	default-autowire="byName">
 
-	<context:property-placeholder location="classpath:config.properties"/>
+	<context:property-placeholder location="classpath:config.properties" />
 	<context:annotation-config />
 
 	<!-- 使用annotation 自动注册bean,并检查@Required,@Autowired的属性已被注入 -->
@@ -15,11 +15,6 @@
 		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />
 	</context:component-scan>
 
-	<bean id="defaultMQAdminExt" class="com.alibaba.rocketmq.tools.admin.DefaultMQAdminExt" init-method="start"
-		destroy-method="shutdown" >
-		<property name="namesrvAddr" value="${rocketmq.namesrv.addr}"/>
-	</bean>
-	
 	<bean class="com.alibaba.rocketmq.config.ConfigureInitializer" init-method="init">
 		<property name="configureProps">
 			<props>

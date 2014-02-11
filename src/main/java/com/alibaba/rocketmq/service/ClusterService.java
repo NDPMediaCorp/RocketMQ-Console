@@ -7,20 +7,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.alibaba.rocketmq.client.exception.MQBrokerException;
 import com.alibaba.rocketmq.common.protocol.body.ClusterInfo;
 import com.alibaba.rocketmq.common.protocol.body.KVTable;
 import com.alibaba.rocketmq.common.protocol.route.BrokerData;
 import com.alibaba.rocketmq.domain.ClusterBean;
 import com.alibaba.rocketmq.domain.ClusterBean.BrokerBase;
 import com.alibaba.rocketmq.domain.ClusterBean.BrokerBase.BrokerEntity;
-import com.alibaba.rocketmq.remoting.exception.RemotingConnectException;
-import com.alibaba.rocketmq.remoting.exception.RemotingSendRequestException;
-import com.alibaba.rocketmq.remoting.exception.RemotingTimeoutException;
-import com.alibaba.rocketmq.tools.admin.MQAdminExt;
+import com.alibaba.rocketmq.tools.admin.DefaultMQAdminExt;
 
 
 /**
@@ -32,12 +27,27 @@ import com.alibaba.rocketmq.tools.admin.MQAdminExt;
 @Service
 public class ClusterService {
 
-    @Autowired
-    MQAdminExt defaultMQAdminExt;
+    public List<ClusterBean> list() throws Exception {
+
+        DefaultMQAdminExt defaultMQAdminExt = new DefaultMQAdminExt();
+        defaultMQAdminExt.setInstanceName(Long.toString(System.currentTimeMillis()));
+        List<ClusterBean> result = null;
+
+        try {
+            defaultMQAdminExt.start();
+            result = doList(defaultMQAdminExt);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally {
+            defaultMQAdminExt.shutdown();
+        }
+        return result;
+    }
 
 
-    public List<ClusterBean> listAllBasicInfo() throws InterruptedException, MQBrokerException,
-            RemotingTimeoutException, RemotingSendRequestException, RemotingConnectException {
+    private List<ClusterBean> doList(DefaultMQAdminExt defaultMQAdminExt) throws Exception {
 
         ClusterInfo clusterInfoSerializeWrapper = defaultMQAdminExt.examineBrokerClusterInfo();
         // System.out.printf("%-16s  %-32s  %-4s  %-22s %-22s %11s %11s\n",//

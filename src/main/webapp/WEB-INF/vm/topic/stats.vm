@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  #include("head.vm")
+  <body>
+  <!-- head-->
+  #parse("body_1.vm")
+
+   <div class="container theme-showcase"><!-- /container  -->
+		<table class="table table-bordered table-hover">  
+              <thead>  
+                <tr>  
+                  <th>TopicName</th>
+				  <th>BrokerName</th>
+				  <th>qid</th>
+				  <th>MinOffset</th>
+				  <th>MaxOffset</th>
+				  <th>LastUpdated</th>
+                </tr>  
+              </thead>  
+              <tbody>  
+				#foreach($topicBean in $topicBeanList)
+					<tr>
+                        <td>$topicBean.topicName</td>
+						<td>$topicBean.brokerName</td>
+						<td>$topicBean.qid</td>
+						<td>$topicBean.minOffset</td>
+						<td>$topicBean.maxOffset</td>
+						<td>$topicBean.lastUpdated</td>
+                    </tr>
+				#end
+              </tbody>
+        </table>
+   </div>
+   #include("foot.vm")
+  </body>
+</html>

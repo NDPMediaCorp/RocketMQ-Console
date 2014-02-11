@@ -7,8 +7,8 @@
                 <div class="navbar-collapse collapse">
                   <ul class="nav navbar-nav">
                     <li #if($cluster_flag)class="$cluster_flag"#end><a href="/cluster/list.do">Cluster</a></li>
+                    <li #if($topic_flag)class="$topic_flag"#end><a href="/topic/list.do">Topic</a></li>
                     <li #if($broker_flag)class="$cluster_flag"#end><a href="/broker/list.do">Broker</a></li>
-                    <li #if($topic_flag)class="$cluster_flag"#end><a href="/topic/list.do">Topic</a></li>
         			<li #if($connection_flag)class="$cluster_flag"#end><a href="/connection/list.do">Connection</a></li>
         			<li #if($message_flag)class="$cluster_flag"#end><a href="/message/list.do">Message</a></li>
         			<li #if($kvconfig_flag)class="$cluster_flag"#end><a href="/kvConfig/list.do">KvConfig</a></li>

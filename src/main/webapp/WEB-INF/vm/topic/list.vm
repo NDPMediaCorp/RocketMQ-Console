@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  #include("head.vm")
+  
+  <body>
+  <!-- head-->
+  #parse("body_1.vm")
+  <div class="container">
+   <button class="btn btn-success" type="button" onclick="add()">Add</button>
+  </div>
+  <p>&nbsp;</p>
+   <div class="container theme-showcase"><!-- /container  -->
+		<table class="table table-bordered table-hover">  
+              <thead>  
+                <tr>  
+                  <th>Topic</th>
+				  <th>operations</th>
+                </tr>  
+              </thead>  
+              <tbody>  
+				#foreach($topicBean in $topicBeanList)
+					<tr>
+                        <td>$topicBean.topicName</td>
+						<td>&nbsp;&nbsp; 
+							<button class="btn btn-primary btn-xs" type="button" onclick="checkStats('$topicBean.topicName')">Check</button>
+							&nbsp;&nbsp;&nbsp;&nbsp; 
+							<button class="btn btn-info btn-xs" type="button">Update</button>
+							&nbsp;&nbsp;&nbsp;&nbsp; 
+                            <button class="btn btn-danger btn-xs" type="button">Delete</button>
+							&nbsp;&nbsp;
+						</td>
+                    </tr>
+				#end
+              </tbody>
+        </table>
+   </div>
+   #include("foot.vm")
+  </body>
+</html>
+<script language="javascript">
+  	function checkStats(topicName) {
+		window.location.href = "stats.do?topicName=" + topicName;
+	}
+	
+	function add() {
+		window.location.href = "add.do";
+	}
+</script>

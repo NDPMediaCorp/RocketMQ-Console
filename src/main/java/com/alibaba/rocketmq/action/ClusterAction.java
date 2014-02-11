@@ -23,11 +23,6 @@ public class ClusterAction {
     ClusterService clusterService;
 
 
-    /**
-     * 放入公共属性
-     * 
-     * @param map
-     */
     void putPublicAttribute(ModelMap map) {
         map.put("cluster_flag", "active");
     }
@@ -37,7 +32,7 @@ public class ClusterAction {
     public String list(ModelMap map) {
         putPublicAttribute(map);
         try {
-            List<ClusterBean> clusterBeanList = clusterService.listAllBasicInfo();
+            List<ClusterBean> clusterBeanList = clusterService.list();
             map.put("clusterBeanList", clusterBeanList);
             System.out.println(clusterBeanList);
         }

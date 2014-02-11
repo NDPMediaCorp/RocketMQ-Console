@@ -9,7 +9,6 @@
 
    <div class="container theme-showcase"><!-- /container  -->
 		<table class="table table-bordered table-hover">  
-              <caption>Cluster Info</caption>  
               <thead>  
                 <tr>  
                   <th>Cluster</th>  
