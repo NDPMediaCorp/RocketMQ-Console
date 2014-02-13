@@ -12,11 +12,11 @@
 				<form action="update.do" method="post">
 					<tr>
                        <td>BrokerAddr:</td>
-					   <td><input class="form-inline span2" type="text" placeholder="127.0.0.1:9876" name="brokerAddr" /></td>
+					   <td><input class="form-inline span2" type="text" placeholder="127.0.0.1:9876" name="brokerAddr" value="$!brokerAddr"/></td>
                     </tr>
 					<tr >
 					   <td>ClusterName:</td>
-					   <td><input class="form-inline span2" type="text" placeholder="defaultCluster" name="clusterName" /></td>
+					   <td><input class="form-inline span2" type="text" placeholder="defaultCluster" name="clusterName" value="$!clusterName"/></td>
                     </tr>
 					<tr >
                        <td>TopicName:</td>
@@ -24,19 +24,19 @@
                     </tr>
 					<tr >
                        <td>ReadQueueNums:</td>
-					   <td><input class="form-inline span2" type="text" placeholder="8" name="readQueueNums" /></td>
+					   <td><input class="form-inline span2" type="text" placeholder="8" name="readQueueNums" value="$!readQueueNums"/></td>
                     </tr>
 					<tr >
                        <td>WriteQueueNums:</td>
-					   <td><input class="form-inline span2" type="text" placeholder="8" name="writeQueueNums" /></td>
+					   <td><input class="form-inline span2" type="text" placeholder="8" name="writeQueueNums" value="$!writeQueueNums"/></td>
                     </tr>
 					<tr >
                        <td>Permission(W|R|WR):</td>
 					   <td>
 						<select class="span2" name="perm">
-							<option value="2" >W</option>
-                            <option value="4" >R</option>
-							<option value="6" >WR</option>
+							<option value="2" #if($perm == 2)selected="selected"#end>W</option>
+                            <option value="4" #if($perm == 4)selected="selected"#end>R</option>
+							<option value="6" #if($perm == 6)selected="selected"#end>WR</option>
                         </select>
 					   </td>
                     </tr>

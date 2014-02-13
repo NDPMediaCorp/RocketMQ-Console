@@ -52,7 +52,8 @@ public class TopicAction {
         try {
             List<TopicBean> topicBeanList = topicService.stats(topicName);
             map.put("topicBeanList", topicBeanList);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
         return "topic/stats";
@@ -67,14 +68,39 @@ public class TopicAction {
 
 
     @RequestMapping(value = "/update.do", method = RequestMethod.POST)
-    public String update(ModelMap map) {
-        return "topic/index";
+    public String update(ModelMap map, @RequestParam String topicName, @RequestParam String readQueueNums,
+            @RequestParam String writeQueueNums, @RequestParam String perm, @RequestParam String brokerAddr,
+            @RequestParam(required = false) String clusterName) {
+        putPublicAttribute(map);
+        try {
+            topicService.update(topicName, readQueueNums, writeQueueNums, perm, brokerAddr, clusterName);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "redirect:topic/list.do";
     }
 
 
-    @RequestMapping(value = "/delete.do", method = { RequestMethod.DELETE, RequestMethod.GET })
-    public String delete() {
-        return "topic/index";
+    @RequestMapping(value = "/update.do", method = RequestMethod.GET)
+    public String update(ModelMap map, @RequestParam String topicName) {
+        putPublicAttribute(map);
+        map.put("topicName", topicName);
+        return "topic/update";
+    }
+
+
+    @RequestMapping(value = "/delete.do", method = RequestMethod.GET )
+    public String delete(ModelMap map, @RequestParam String clusterName,
+            @RequestParam(required = false) String nameServer, @RequestParam String topicName) {
+        putPublicAttribute(map);
+        try {
+            topicService.delete(topicName, clusterName, nameServer);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "topic/delete";
     }
 
 }

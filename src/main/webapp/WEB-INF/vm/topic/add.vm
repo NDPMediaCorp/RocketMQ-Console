@@ -34,9 +34,9 @@
                        <td>Permission(W|R|WR):</td>
 					   <td>
 						<select class="span2" name="perm">
-							<option value="W">W</option>
-                            <option value="R" >R</option>
-							<option value="WR" >WR</option>
+							<option value="2">W</option>
+                            <option value="4" >R</option>
+							<option value="6" >WR</option>
                         </select>
 					   </td>
                     </tr>
