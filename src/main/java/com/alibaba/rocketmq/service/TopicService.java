@@ -158,7 +158,8 @@ public class TopicService {
         }
         return false;
     }
-    
+
+
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public boolean delete(String topicName, String clusterName, String nameServer) throws Exception {
         DefaultMQAdminExt adminExt = new DefaultMQAdminExt();
@@ -176,9 +177,11 @@ public class TopicService {
                 adminExt.deleteTopicInNameServer(nameServerSet, topicName);
                 return true;
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
-        }  finally {
+        }
+        finally {
             adminExt.shutdown();
         }
         return false;
