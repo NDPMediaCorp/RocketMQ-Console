@@ -178,6 +178,8 @@ public class TopicService {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }  finally {
+            adminExt.shutdown();
         }
         return false;
     }
