@@ -17,6 +17,7 @@ import com.alibaba.rocketmq.common.admin.TopicOffset;
 import com.alibaba.rocketmq.common.admin.TopicStatsTable;
 import com.alibaba.rocketmq.common.message.MessageQueue;
 import com.alibaba.rocketmq.common.protocol.body.TopicList;
+import com.alibaba.rocketmq.common.protocol.route.TopicRouteData;
 import com.alibaba.rocketmq.domain.TopicBean;
 import com.alibaba.rocketmq.tools.admin.DefaultMQAdminExt;
 import com.alibaba.rocketmq.tools.command.CommandUtil;
@@ -185,5 +186,23 @@ public class TopicService {
             adminExt.shutdown();
         }
         return false;
+    }
+
+
+    public TopicRouteData route(String topicName, String nameSrv) throws Exception {
+        DefaultMQAdminExt adminExt = new DefaultMQAdminExt();
+        adminExt.setInstanceName(Long.toString(System.currentTimeMillis()));
+        TopicRouteData topicRouteData = null;
+        try {
+            adminExt.start();
+            topicRouteData = adminExt.examineTopicRouteInfo(topicName);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally {
+            adminExt.shutdown();
+        }
+        return topicRouteData;
     }
 }

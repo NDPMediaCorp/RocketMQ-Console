@@ -22,13 +22,11 @@
 					<tr>
                         <td>$topicBean.topicName</td>
 						<td>&nbsp;&nbsp; 
-							<button class="btn btn-info" type="button" onclick="stat('$topicBean.topicName')">Stat</button>
-							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  
-							<button class="btn btn-info" type="button" onclick="update('$topicBean.topicName')">Update</button>
-							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  
-							<button class="btn btn-info" type="button" onclick="route('$topicBean.topicName')">Route</button>
-							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-                            <button class="btn btn-danger" type="button" onclick="delete('$topicBean.topicName')">Delete</button>
+							<button class="btn btn-primary btn-xs" type="button" onclick="checkStats('$topicBean.topicName')">Check</button>
+							&nbsp;&nbsp;&nbsp;&nbsp; 
+							<button class="btn btn-info btn-xs" type="button">Update</button>
+							&nbsp;&nbsp;&nbsp;&nbsp; 
+                            <button class="btn btn-danger btn-xs" type="button">Delete</button>
 							&nbsp;&nbsp;
 						</td>
                     </tr>
@@ -40,18 +38,10 @@
   </body>
 </html>
 <script language="javascript">
-  	function stat(topicName) {
+  	function checkStats(topicName) {
 		window.location.href = "stats.do?topicName=" + topicName;
 	}
-	function update(topicName) {
-		window.location.href = "stats.do?topicName=" + topicName;
-	}
-	function route(topicName) {
-		window.location.href = "stats.do?topicName=" + topicName;
-	}
-	function delete(topicName) {
-		window.location.href = "stats.do?topicName=" + topicName;
-	}
+	
 	function add() {
 		window.location.href = "add.do";
 	}
