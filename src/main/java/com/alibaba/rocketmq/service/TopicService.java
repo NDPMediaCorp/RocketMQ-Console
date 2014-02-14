@@ -171,7 +171,7 @@ public class TopicService {
                 Set<String> masterSet = CommandUtil.fetchMasterAddrByClusterName(adminExt, clusterName);
                 adminExt.deleteTopicInBroker(masterSet, topicName);
                 Set<String> nameServerSet = null;
-                if (StringUtils.isNotBlank(clusterName)) {
+                if (StringUtils.isNotBlank(nameServer)) {
                     String[] ns = nameServer.split(";");
                     nameServerSet = new HashSet(Arrays.asList(ns));
                 }

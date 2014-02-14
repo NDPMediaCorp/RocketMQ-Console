@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head >
+  #include("head.vm")
+    </head>
+  
+  <body>
+  <!-- head-->
+  #parse("body_1.vm")
+
+   <div class="container theme-showcase"><!-- /container  -->
+		<table class="table table-bordered table-hover">  
+              <tbody>  
+				<form action="delete.do" method="post">
+					<tr >
+                       <td>nameServer:</td>
+					   <td>
+						<select class="span2" name="nameServer">
+							#foreach($namesrvName in $namesrvAddrArr)
+								<option value="$namesrvName">$namesrvName</option>
+							#end
+                        </select>
+					   </td>
+                    </tr>
+					<tr >
+					   <td>ClusterName:</td>
+					   <td><input class="form-inline span2" type="text" placeholder="defaultCluster" name="clusterName"/></td>
+                    </tr>
+					<tr >
+                       <td>TopicName:</td>
+					   <td><input class="form-inline span2" type="text" placeholder="topicName" name="topicName" value="$!topicName"/></td>
+                    </tr>
+					<tr >
+                        <td colspan="2">
+							<center>
+								<button class="btn btn-success" type="submit" >Submit</button>
+                            </center>
+						</td>
+                    </tr>
+                </form>
+              </tbody>
+        </table>
+   </div>
+   #include("foot.vm")
+  </body>
+</html>

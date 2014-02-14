@@ -1,7 +1,7 @@
 package com.alibaba.rocketmq.config;
 
-import java.util.Enumeration;
-import java.util.Properties;
+
+import com.alibaba.rocketmq.common.MixAll;
 
 
 /**
@@ -12,26 +12,18 @@ import java.util.Properties;
  * 
  */
 public class ConfigureInitializer {
+    
+    private String namesrvAddr;
 
-    private Properties configureProps;
-
-
-    public Properties getConfigureProps() {
-        return configureProps;
+    public String getNamesrvAddr() {
+        return namesrvAddr;
     }
 
-
-    public void setConfigureProps(Properties configureProps) {
-        this.configureProps = configureProps;
+    public void setNamesrvAddr(String namesrvAddr) {
+        this.namesrvAddr = namesrvAddr;
     }
-
 
     public void init() {
-        @SuppressWarnings("unchecked")
-        Enumeration<String> enume = (Enumeration<String>) configureProps.propertyNames();
-        while (enume.hasMoreElements()) {
-            String key = enume.nextElement();
-            System.setProperty(key, configureProps.getProperty(key));
-        }
+        System.setProperty(MixAll.NAMESRV_ADDR_PROPERTY, namesrvAddr);
     }
 }

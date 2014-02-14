@@ -15,11 +15,8 @@
 		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />
 	</context:component-scan>
 
-	<bean class="com.alibaba.rocketmq.config.ConfigureInitializer" init-method="init">
-		<property name="configureProps">
-			<props>
-				<prop key="rocketmq.namesrv.addr">${rocketmq.namesrv.addr}</prop>
-			</props>
-		</property>
+	<bean id="configureInitializer" class="com.alibaba.rocketmq.config.ConfigureInitializer" init-method="init">
+		<property name="namesrvAddr" value="${rocketmq.namesrv.addr}" />
 	</bean>
+
 </beans>

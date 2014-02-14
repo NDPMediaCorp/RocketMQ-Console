@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.alibaba.rocketmq.common.protocol.route.TopicRouteData;
+import com.alibaba.rocketmq.config.ConfigureInitializer;
 import com.alibaba.rocketmq.domain.TopicBean;
 import com.alibaba.rocketmq.service.TopicService;
 
@@ -24,6 +26,9 @@ public class TopicAction {
 
     @Autowired
     TopicService topicService;
+
+    @Autowired
+    ConfigureInitializer configureInitializer;
 
 
     void putPublicAttribute(ModelMap map) {
@@ -67,18 +72,42 @@ public class TopicAction {
     }
 
 
-    @RequestMapping(value = "/update.do", method = RequestMethod.POST)
-    public String update(ModelMap map, @RequestParam String topicName, @RequestParam String readQueueNums,
-            @RequestParam String writeQueueNums, @RequestParam String perm, @RequestParam String brokerAddr,
-            @RequestParam(required = false) String clusterName) {
+    @RequestMapping(value = "/route.do", method = RequestMethod.GET)
+    public String route(ModelMap map, @RequestParam String topicName) {
         putPublicAttribute(map);
         try {
-            topicService.update(topicName, readQueueNums, writeQueueNums, perm, brokerAddr, clusterName);
+            TopicRouteData topicRouteData =
+                    topicService.route(topicName, configureInitializer.getNamesrvAddr());
+            map.put("topicRouteData", topicRouteData);
         }
         catch (Exception e) {
             e.printStackTrace();
         }
-        return "redirect:topic/list.do";
+        return "topic/route";
+    }
+
+
+    @RequestMapping(value = "/delete.do", method = RequestMethod.GET)
+    public String delete(ModelMap map, @RequestParam String topicName) {
+        putPublicAttribute(map);
+        map.put("topicName", topicName);
+        String[] namesrvAddrArr = configureInitializer.getNamesrvAddr().split(",");
+        map.put("namesrvAddrArr", namesrvAddrArr);
+        return "topic/delete";
+    }
+
+
+    @RequestMapping(value = "/delete.do", method = RequestMethod.POST)
+    public String delete(ModelMap map, @RequestParam String clusterName,
+            @RequestParam(required = false) String nameServer, @RequestParam String topicName) {
+        putPublicAttribute(map);
+        try {
+            topicService.delete(topicName, clusterName, nameServer);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "redirect:list.do";
     }
 
 
@@ -90,18 +119,17 @@ public class TopicAction {
     }
 
 
-    @RequestMapping(value = "/delete.do", method = RequestMethod.GET )
-    public String delete(ModelMap map, @RequestParam String clusterName,
-            @RequestParam(required = false) String nameServer, @RequestParam String topicName) {
+    @RequestMapping(value = "/update.do", method = RequestMethod.POST)
+    public String update(ModelMap map, @RequestParam String topicName, @RequestParam String readQueueNums,
+            @RequestParam String writeQueueNums, @RequestParam String perm, @RequestParam String brokerAddr,
+            @RequestParam(required = false) String clusterName) {
         putPublicAttribute(map);
         try {
-            topicService.delete(topicName, clusterName, nameServer);
+            topicService.update(topicName, readQueueNums, writeQueueNums, perm, brokerAddr, clusterName);
         }
         catch (Exception e) {
             e.printStackTrace();
         }
-        return "topic/delete";
+        return "redirect:list.do";
     }
-
-    
 }
