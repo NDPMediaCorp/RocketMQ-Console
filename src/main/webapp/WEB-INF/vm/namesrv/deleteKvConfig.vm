@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  #include("head.vm")
+</head>
+  
+  <body>
+  <!-- head-->
+  #parse("body_1.vm")
+   <div class="container theme-showcase"><!-- /container  -->
+	  <form class="navbar-form navbar-left" role="search" action="deleteKvConfig.do" method="post">
+          namespace:
+		  <div class="form-group">
+            <input type="text" class="form-control" placeholder="namespace" value="$!namespace" name="namespace">
+          </div>
+		  key:
+		  <div class="form-group">
+            <input type="text" class="form-control" placeholder="key" value="$!key" name="key">
+          </div>
+		  <button type="submit" class="btn btn-default">Submit</button>
+      </form>
+   <br>
+   #parse("msg.vm")
+   #include("foot.vm")
+      </div>
+  </body>
+</html>
