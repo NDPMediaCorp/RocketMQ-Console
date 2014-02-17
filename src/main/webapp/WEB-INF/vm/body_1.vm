@@ -9,15 +9,26 @@
                     <li #if($cluster_flag)class="$cluster_flag"#end><a href="/cluster/list.do">Cluster</a></li>
                     <li #if($topic_flag)class="$topic_flag"#end><a href="/topic/list.do">Topic</a></li>
                     <li class="dropdown $!connection_flag" >
-                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Connection <b class="caret"></b></a>
+                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Connection<b class="caret"></b></a>
                          <ul class="dropdown-menu">
                             <li><a href="/conn/consumerConnection.do">ConsumerConnection</a></li>
                             <li><a href="/conn/producerConnection.do">ProducerConnection</a></li>
                          </ul>
                     </li>
+        			<li class="dropdown $!namesrv_flag" >
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown">Nameserv<b class="caret"></b></a>
+							<ul class="dropdown-menu">
+								<li><a href="/namesrv/updateKvConfig.do">UpdateKvConfig</a></li>
+                                <li><a href="/namesrv/deleteKvConfig.do">DeleteKvConfig</a></li>
+								<li><a href="/namesrv/getProjectGroup.do">GetProjectGroup</a></li>
+								<li><a href="/namesrv/updateProjectGroup.do">UpdateProjectGroup</a></li>
+								<li><a href="/namesrv/deleteProjectGroup.do">DeleteProjectGroup</a></li>
+								<li><a href="/namesrv/wipeWritePerm.do">WipeWritePerm</a></li>
+							 </ul>
+					</li>
+						
                     <li #if($broker_flag)class="$cluster_flag"#end><a href="/broker/list.do">Broker</a></li>
         			<li #if($message_flag)class="$cluster_flag"#end><a href="/message/list.do">Message</a></li>
-        			<li #if($kvconfig_flag)class="$cluster_flag"#end><a href="/kvConfig/list.do">KvConfig</a></li>
                     <li class="dropdown">
                           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Group <b class="caret"></b></a>
                           <ul class="dropdown-menu">
