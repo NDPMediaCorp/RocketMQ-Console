@@ -1,13 +1,13 @@
 <div class="page-header">
 </div>
-#if($msg)
-    #if($msg == true)
-    <div class="alert alert-success">
-            <strong>Well done!</strong>
-    </div>
-    #else
-    <div class="alert alert-danger">
-            <strong>Oh snap! Failed!</strong>
-    </div>
-    #end
+
+#if($msg == true)
+<div class="alert alert-success">
+        <strong>Well done!</strong>
+</div>
+#elseif($msg == false)
+<div class="alert alert-danger">
+        <strong>Oh snap! Failed!</strong>
+</div>
 #end
+
