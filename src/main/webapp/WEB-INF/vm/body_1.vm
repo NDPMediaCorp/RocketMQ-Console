@@ -27,8 +27,16 @@
 							 </ul>
 					</li>
 						
+        			<li class="dropdown $!message_flag" >
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown">Message<b class="caret"></b></a>
+							<ul class="dropdown-menu">
+								<li><a href="/message/queryMsgById.do">QueryMsgById</a></li>
+                                <li><a href="/message/queryMsgByKey.do">QueryMsgByKey</a></li>
+								<li><a href="/message/queryMsgByOffset.do">QueryMsgByOffset</a></li>
+							 </ul>
+					</li>
+					
                     <li #if($broker_flag)class="$cluster_flag"#end><a href="/broker/list.do">Broker</a></li>
-        			<li #if($message_flag)class="$cluster_flag"#end><a href="/message/list.do">Message</a></li>
                     <li class="dropdown">
                           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Group <b class="caret"></b></a>
                           <ul class="dropdown-menu">

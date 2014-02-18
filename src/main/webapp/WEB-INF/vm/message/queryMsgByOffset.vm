@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  #include("head.vm")
+</head>
+  
+  <body>
+  <!-- head-->
+  #parse("body_1.vm")
+   <div class="container theme-showcase"><!-- /container  -->
+	  <form class="navbar-form navbar-left" role="search" action="queryMsgByOffSet.do" method="post">
+		  topicName:
+		  <div class="form-group">
+            <input type="text" class="form-control" placeholder="topicName" value="$!topicName" name="topicName">
+          </div>
+		   brokerName:
+		  <div class="form-group">
+            <input type="text" class="form-control" placeholder="brokerName" value="$!brokerName" name="brokerName">
+          </div>
+		   queueId:
+		  <div class="form-group">
+            <input type="text" class="form-control" placeholder="queueId" value="$!queueId" name="queueId">
+          </div>
+		  offset:
+		  <div class="form-group">
+            <input type="text" class="form-control" placeholder="offset" value="$!offset" name="offset">
+          </div>
+		  <button type="submit" class="btn btn-default">Submit</button>
+      </form>
+   <br>
+   #if($result)
+		<table class="table table-bordered table-hover">  
+			<thead>
+					<tr>
+				         #foreach($head in $result.thead)
+						     <td>$head</td>
+						 #end
+					</tr>
+            </thead>
+              <tbody> 
+				#foreach($tr in $result.tbodyData)
+					<tr>
+						#foreach($td in $tr)
+						  <td>$td</td>
+						#end
+					</tr>
+				#end
+              </tbody>
+        </table>
+	#end
+   #include("foot.vm")
+      </div>
+  </body>
+</html>
