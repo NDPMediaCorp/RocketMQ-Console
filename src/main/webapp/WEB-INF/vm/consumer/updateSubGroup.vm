@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  #include("head.vm")
+</head>
+  
+  <body>
+	
+  <!-- head-->
+  #parse("body_1.vm")
+   <div class="container theme-showcase"><!-- /container  -->
+	  <form class="navbar-form navbar-left" role="search" action="updateSubGroup.do" method="post">
+		    brokerAddr:
+		  <div class="form-group">
+            <input type="text" class="form-control" placeholder="brokerAddr" value="$!brokerAddr" name="brokerAddr">
+          </div>
+		    clusterName:
+		  <div class="form-group">
+            <input type="text" class="form-control" placeholder="clusterName" value="$!clusterName" name="clusterName">
+          </div>
+		   groupName:
+		  <div class="form-group">
+            <input type="text" class="form-control" placeholder="groupName" value="$!groupName" name="consumerGroup">
+          </div><p></p>
+		   consumeEnable:
+		  <div class="form-group">
+            <input type="text" class="form-control" placeholder="consumeEnable" value="$!consumeEnable" name="consumeEnable">
+          </div>
+		   consumeFromMinEnable:
+		  <div class="form-group">
+            <input type="text" class="form-control" placeholder="consumeFromMinEnable" value="$!consumeFromMinEnable" name="consumeFromMinEnable">
+          </div>
+		   consumeBroadcastEnable:
+		  <div class="form-group">
+            <input type="text" class="form-control" placeholder="consumeBroadcastEnable" value="$!consumeBroadcastEnable" name="consumeBroadcastEnable">
+          </div><p></p>
+		   retryQueueNums:
+		  <div class="form-group">
+            <input type="text" class="form-control" placeholder="retryQueueNums" value="$!retryQueueNums" name="retryQueueNums">
+          </div>
+		   retryMaxTimes:
+		  <div class="form-group">
+            <input type="text" class="form-control" placeholder="retryMaxTimes" value="$!retryMaxTimes" name="retryMaxTimes">
+          </div>
+		   brokerId:
+		  <div class="form-group">
+            <input type="text" class="form-control" placeholder="brokerId" value="$!brokerId" name="brokerId">
+          </div><p></p>
+		   whichBrokerWhenConsumeSlowly:
+		  <div class="form-group">
+            <input type="text" class="form-control" placeholder="whichBrokerWhenConsumeSlowly" value="$!whichBrokerWhenConsumeSlowly" name="whichBrokerWhenConsumeSlowly">
+          </div>
+		  <button type="submit" class="btn btn-default">Submit</button>
+      </form>
+   <br>
+      </div>
+	  <div class="container">
+		#parse("msg.vm")
+   #include("foot.vm")
+      </div>
+  </body>
+</html>

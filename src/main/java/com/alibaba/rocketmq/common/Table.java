@@ -3,6 +3,7 @@ package com.alibaba.rocketmq.common;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +24,8 @@ public class Table {
     private final List<String[]> tbodyData;
 
     private String[] thead;
+
+    private LinkedHashMap<String, String> extData = new LinkedHashMap<String, String>();
 
 
     public Table(int row, int column) {
@@ -194,5 +197,15 @@ public class Table {
             table.insertTR(tr);
         }
         return table;
+    }
+
+
+    public LinkedHashMap<String, String> getExtData() {
+        return extData;
+    }
+
+
+    public void addExtData(String key, String value) {
+        extData.put(key, value);
     }
 }

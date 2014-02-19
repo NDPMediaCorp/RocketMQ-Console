@@ -42,12 +42,8 @@
                             <li><a href="/broker/updateBrokerConfig.do">UpdateBrokerConfig</a></li>
                           </ul>
                     </li>
-                    <li class="dropdown">
-                          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Group <b class="caret"></b></a>
-                          <ul class="dropdown-menu">
-                            <li><a href="#">SubGroup</a></li>
-                            <li><a href="#">ProjectGroup</a></li>
-                          </ul>
+                    <li class="dropdown $!offset_flag">
+                         <a href="/offset/resetOffsetByTime.do">Offset</a>
                     </li>
                   </ul>
                 </div><!--/.nav-collapse -->
