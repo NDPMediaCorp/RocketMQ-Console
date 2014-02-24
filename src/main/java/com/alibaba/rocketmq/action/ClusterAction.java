@@ -1,11 +1,13 @@
 package com.alibaba.rocketmq.action;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+
 import com.alibaba.rocketmq.domain.ClusterBean;
 import com.alibaba.rocketmq.service.ClusterService;
 
@@ -17,14 +19,15 @@ import com.alibaba.rocketmq.service.ClusterService;
  */
 @Controller
 @RequestMapping("/cluster")
-public class ClusterAction {
+public class ClusterAction extends AbstractAction {
 
     @Autowired
     ClusterService clusterService;
 
 
-    void putPublicAttribute(ModelMap map) {
-        map.put("cluster_flag", "active");
+    @Override
+    protected String getFlag() {
+        return "cluster_flag";
     }
 
 

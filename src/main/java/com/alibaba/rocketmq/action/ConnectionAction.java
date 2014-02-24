@@ -19,16 +19,15 @@ import com.alibaba.rocketmq.service.ConnectionService;
  */
 @Controller
 @RequestMapping("/conn")
-public class ConnectionAction {
-
-    private static final String FLAG = "connection_flag";
+public class ConnectionAction extends AbstractAction {
 
     @Autowired
     ConnectionService connectionService;
 
 
-    void putPublicAttribute(ModelMap map) {
-        map.put(FLAG, "active");
+    @Override
+    protected String getFlag() {
+        return "connection_flag";
     }
 
 

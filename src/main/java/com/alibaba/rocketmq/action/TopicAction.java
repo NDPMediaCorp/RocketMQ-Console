@@ -22,7 +22,7 @@ import com.alibaba.rocketmq.service.TopicService;
  */
 @Controller
 @RequestMapping("/topic")
-public class TopicAction {
+public class TopicAction extends AbstractAction {
 
     @Autowired
     TopicService topicService;
@@ -31,8 +31,8 @@ public class TopicAction {
     ConfigureInitializer configureInitializer;
 
 
-    void putPublicAttribute(ModelMap map) {
-        map.put("topic_flag", "active");
+    protected String getFlag() {
+        return "topic_flag";
     }
 
 
