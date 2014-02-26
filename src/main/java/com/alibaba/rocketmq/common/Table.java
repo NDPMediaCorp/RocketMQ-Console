@@ -21,7 +21,7 @@ public class Table {
 
     private final int row;
 
-    private final List<String[]> tbodyData;
+    private final List<Object[]> tbodyData;
 
     private String[] thead;
 
@@ -34,11 +34,11 @@ public class Table {
         }
         this.row = row;
         this.column = column;
-        this.tbodyData = new ArrayList<String[]>(getRow());
+        this.tbodyData = new ArrayList<Object[]>(getRow());
     }
 
 
-    public Table(String[] thead, List<String[]> tbodyData) {
+    public Table(String[] thead, List<Object[]> tbodyData) {
         checkTheadNotNull(thead);
         this.thead = thead;
         this.column = getThead().length;
@@ -49,7 +49,7 @@ public class Table {
     }
 
 
-    public Table(List<String[]> tbodyData) {
+    public Table(List<Object[]> tbodyData) {
         checkTbodyDataNotNull(tbodyData);
         this.row = tbodyData.size();
         this.column = tbodyData.get(0).length;
@@ -63,7 +63,7 @@ public class Table {
         this.thead = thead;
         this.column = getThead().length;
         this.row = row;
-        this.tbodyData = new ArrayList<String[]>(getRow());
+        this.tbodyData = new ArrayList<Object[]>(getRow());
     }
 
 
@@ -74,11 +74,11 @@ public class Table {
     }
 
 
-    private void checkTbodyDataNotNull(List<String[]> tbodyData) {
+    private void checkTbodyDataNotNull(List<Object[]> tbodyData) {
         if (tbodyData == null || tbodyData.size() <= 0) {
             throw new IllegalArgumentException("tbodyData is blank");
         }
-        for (String[] tr : tbodyData) {
+        for (Object[] tr : tbodyData) {
             if (tr == null || tr.length <= 0) {
                 throw new IllegalArgumentException("tbodyData`tr is blank");
             }
@@ -86,8 +86,8 @@ public class Table {
     }
 
 
-    private void checkTbodyDataValid(List<String[]> tbodyData, int column) {
-        for (String[] tr : tbodyData) {
+    private void checkTbodyDataValid(List<Object[]> tbodyData, int column) {
+        for (Object[] tr : tbodyData) {
             if (tr.length != column) {
                 throw new IllegalArgumentException("tbodyData`tr is invalid");
             }
@@ -95,14 +95,14 @@ public class Table {
     }
 
 
-    public String[] createTR() {
-        String[] tr = new String[this.column];
+    public Object[] createTR() {
+        Object[] tr = new Object[getColumn()];
         Arrays.fill(tr, DEFAULT_NULL_VALUE);
         return tr;
     }
 
 
-    public Table insertTR(String[] tr) {
+    public Table insertTR(Object[] tr) {
         if (tr.length != getColumn()) {
             throw new IllegalArgumentException("column not equal tr.length!");
         }
@@ -116,7 +116,7 @@ public class Table {
     }
 
 
-    public List<String[]> getTbodyData() {
+    public List<Object[]> getTbodyData() {
         return tbodyData;
     }
 
@@ -136,7 +136,7 @@ public class Table {
     }
 
 
-    public static String[] getTheadFromMap(Map<String, String> map) {
+    static String[] getTheadFromMap(Map<String, String> map) {
         int column = map.entrySet().size();
         String[] thead = new String[column];
         Iterator<String> ite = map.keySet().iterator();
@@ -149,9 +149,9 @@ public class Table {
     }
 
 
-    public static String[] getTbodyFromMap(Map<String, String> map) {
+    static Object[] getTbodyFromMap(Map<String, String> map) {
         int column = map.entrySet().size();
-        String[] tbody = new String[column];
+        Object[] tbody = new Object[column];
         Iterator<Map.Entry<String, String>> ite = map.entrySet().iterator();
         int i = 0;
         while (ite.hasNext()) {
@@ -168,7 +168,7 @@ public class Table {
         Iterator<Map.Entry<String, String>> ite = map.entrySet().iterator();
         while (ite.hasNext()) {
             Map.Entry<String, String> entry = ite.next();
-            String[] tr = table.createTR();
+            Object[] tr = table.createTR();
             tr[0] = entry.getKey();
             tr[1] = entry.getValue();
             table.insertTR(tr);
@@ -178,8 +178,8 @@ public class Table {
 
 
     public static Table Map2HTable(Map<String, String> map) {
-        List<String[]> tbody = new ArrayList<String[]>();
-        String[] tr = getTbodyFromMap(map);
+        List<Object[]> tbody = new ArrayList<Object[]>();
+        Object[] tr = getTbodyFromMap(map);
         tbody.add(tr);
         String[] thead = getTheadFromMap(map);
         return new Table(thead, tbody);
@@ -193,7 +193,7 @@ public class Table {
                 String[] thead = getTheadFromMap(map);
                 table = new Table(thead, list.size());
             }
-            String[] tr = getTbodyFromMap(map);
+            Object[] tr = getTbodyFromMap(map);
             table.insertTR(tr);
         }
         return table;

@@ -1,14 +1,14 @@
 package com.alibaba.rocketmq.action;
 
-import java.util.List;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.alibaba.rocketmq.domain.ClusterBean;
+import com.alibaba.rocketmq.common.Table;
 import com.alibaba.rocketmq.service.ClusterService;
 
 
@@ -20,6 +20,8 @@ import com.alibaba.rocketmq.service.ClusterService;
 @Controller
 @RequestMapping("/cluster")
 public class ClusterAction extends AbstractAction {
+
+    static final Logger logger = LoggerFactory.getLogger(ClusterAction.class);
 
     @Autowired
     ClusterService clusterService;
@@ -35,12 +37,11 @@ public class ClusterAction extends AbstractAction {
     public String list(ModelMap map) {
         putPublicAttribute(map);
         try {
-            List<ClusterBean> clusterBeanList = clusterService.list();
-            map.put("clusterBeanList", clusterBeanList);
-            System.out.println(clusterBeanList);
+            Table table = clusterService.list();
+            map.put("table", table);
         }
         catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return "cluster/list";
     }

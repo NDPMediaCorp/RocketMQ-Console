@@ -1,0 +1,32 @@
+#macro ( table $table )
+	#if($!table)
+        	<table class="table table-bordered table-hover">
+				#if($!table.thead)
+					<thead>
+						<tr>
+						#foreach($th in $!table.thead)
+                            <th>$th</th>
+						#end
+						</tr>
+                    </thead>
+				#end
+                  <tbody> 
+        			#foreach($tr in $!table.tbodyData)
+        				<tr>
+        					#foreach($td in $tr)
+        						<td>
+									#if($td.getClass().getName() == "com.alibaba.rocketmq.common.Table")
+										#table($td)
+									#else
+										$td
+									#end
+								</td>
+        					#end
+        				</tr>
+        			#end
+                  </tbody>
+            </table>
+			#end
+#end
+
+

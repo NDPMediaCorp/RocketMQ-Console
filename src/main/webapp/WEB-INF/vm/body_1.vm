@@ -5,47 +5,47 @@
                   <a class="navbar-brand" href="/">RocketMQ Console</a>
                 </div>
                 <div class="navbar-collapse collapse">
-                  <ul class="nav navbar-nav">
-                    <li #if($cluster_flag)class="$cluster_flag"#end><a href="/cluster/list.do">Cluster</a></li>
-                    <li #if($topic_flag)class="$topic_flag"#end><a href="/topic/list.do">Topic</a></li>
-                    <li class="dropdown $!connection_flag" >
-                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Connection<b class="caret"></b></a>
-                         <ul class="dropdown-menu">
-                            <li><a href="/conn/consumerConnection.do">ConsumerConnection</a></li>
-                            <li><a href="/conn/producerConnection.do">ProducerConnection</a></li>
-                         </ul>
-                    </li>
-        			<li class="dropdown $!namesrv_flag" >
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown">Nameserv<b class="caret"></b></a>
-							<ul class="dropdown-menu">
-								<li><a href="/namesrv/updateKvConfig.do">UpdateKvConfig</a></li>
-                                <li><a href="/namesrv/deleteKvConfig.do">DeleteKvConfig</a></li>
-								<li><a href="/namesrv/getProjectGroup.do">GetProjectGroup</a></li>
-								<li><a href="/namesrv/updateProjectGroup.do">UpdateProjectGroup</a></li>
-								<li><a href="/namesrv/deleteProjectGroup.do">DeleteProjectGroup</a></li>
-								<li><a href="/namesrv/wipeWritePerm.do">WipeWritePerm</a></li>
-							 </ul>
-					</li>
-						
-        			<li class="dropdown $!message_flag" >
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown">Message<b class="caret"></b></a>
-							<ul class="dropdown-menu">
-								<li><a href="/message/queryMsgById.do">QueryMsgById</a></li>
-                                <li><a href="/message/queryMsgByKey.do">QueryMsgByKey</a></li>
-								<li><a href="/message/queryMsgByOffset.do">QueryMsgByOffset</a></li>
-							 </ul>
-					</li>
-					<li class="dropdown $!broker_flag">
-                          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Broker <b class="caret"></b></a>
-                          <ul class="dropdown-menu">
-                            <li><a href="/broker/brokerStats.do">BrokerStats</a></li>
-                            <li><a href="/broker/updateBrokerConfig.do">UpdateBrokerConfig</a></li>
-                          </ul>
-                    </li>
-                    <li class="dropdown $!offset_flag">
-                         <a href="/offset/resetOffsetByTime.do">Offset</a>
-                    </li>
-                  </ul>
+                      <ul class="nav navbar-nav">
+                            <li #if($cluster_flag)class="$cluster_flag"#end><a href="/cluster/list.do">Cluster</a></li>
+                            <li #if($topic_flag)class="$topic_flag"#end><a href="/topic/list.do">Topic</a></li>
+                            <li class="dropdown $!connection_flag" >
+                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Connection<b class="caret"></b></a>
+                                 <ul class="dropdown-menu">
+                                    <li><a href="/conn/consumerConnection.do">ConsumerConnection</a></li>
+                                    <li><a href="/conn/producerConnection.do">ProducerConnection</a></li>
+                                 </ul>
+                            </li>
+                			<li class="dropdown $!namesrv_flag" >
+        							<a href="#" class="dropdown-toggle" data-toggle="dropdown">Nameserv<b class="caret"></b></a>
+        							<ul class="dropdown-menu">
+        								<li><a href="/namesrv/updateKvConfig.do">UpdateKvConfig</a></li>
+                                        <li><a href="/namesrv/deleteKvConfig.do">DeleteKvConfig</a></li>
+        								<li><a href="/namesrv/getProjectGroup.do">GetProjectGroup</a></li>
+        								<li><a href="/namesrv/updateProjectGroup.do">UpdateProjectGroup</a></li>
+        								<li><a href="/namesrv/deleteProjectGroup.do">DeleteProjectGroup</a></li>
+        								<li><a href="/namesrv/wipeWritePerm.do">WipeWritePerm</a></li>
+        							 </ul>
+        					</li>
+    						
+                			<li class="dropdown $!message_flag" >
+        							<a href="#" class="dropdown-toggle" data-toggle="dropdown">Message<b class="caret"></b></a>
+        							<ul class="dropdown-menu">
+        								<li><a href="/message/queryMsgById.do">QueryMsgById</a></li>
+                                        <li><a href="/message/queryMsgByKey.do">QueryMsgByKey</a></li>
+        								<li><a href="/message/queryMsgByOffset.do">QueryMsgByOffset</a></li>
+        							 </ul>
+        					</li>
+        					<li class="dropdown $!broker_flag">
+                                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">Broker <b class="caret"></b></a>
+                                  <ul class="dropdown-menu">
+                                    <li><a href="/broker/brokerStats.do">BrokerStats</a></li>
+                                    <li><a href="/broker/updateBrokerConfig.do">UpdateBrokerConfig</a></li>
+                                  </ul>
+                            </li>
+                            <li class="dropdown $!offset_flag">
+                                 <a href="/offset/resetOffsetByTime.do">Offset</a>
+                            </li>
+                      </ul>
                 </div><!--/.nav-collapse -->
           </div>
     </div>

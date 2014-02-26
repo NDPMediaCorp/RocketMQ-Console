@@ -26,6 +26,7 @@
 				<prop key="input.encoding">utf-8</prop>
 				<prop key="output.encoding">utf-8</prop>
 				<prop key="velocimacro.library">macro.vm</prop>
+				<prop key="velocimacro.library.autoreload">true</prop>
 			</props>
 		</property>
 	</bean>

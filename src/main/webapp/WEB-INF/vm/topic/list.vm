@@ -2,27 +2,6 @@
 <html lang="en">
 <head>
   #include("head.vm")
-  <script language="javascript">
-	function add() {
-		window.location.href = "add.do";
-	}
-	
-  	function stat(topicName) {
-		window.location.href = "stats.do?topicName=" + topicName;
-	}
-	
-	function route(topicName) {
-		window.location.href = "route.do?topicName=" + topicName;
-	}
-	
-	function del(topicName) {
-		window.location.href = "delete.do?topicName=" + topicName;
-	}
-
-	function upd(topicName) {
-		window.location.href = "update.do?topicName=" + topicName;
-	}
-</script>
 </head>
   
   <body>
@@ -60,5 +39,26 @@
         </table>
    </div>
    #include("foot.vm")
+     <script language="javascript">
+	function add() {
+		window.location.href = "add.do";
+	}
+	
+  	function stat(topicName) {
+		window.location.href = "stats.do?topicName=" + topicName;
+	}
+	
+	function route(topicName) {
+		window.location.href = "route.do?topicName=" + topicName;
+	}
+	
+	function del(topicName) {
+		window.location.href = "delete.do?topicName=" + topicName;
+	}
+
+	function upd(topicName) {
+		window.location.href = "update.do?topicName=" + topicName;
+	}
+</script>
   </body>
 </html>

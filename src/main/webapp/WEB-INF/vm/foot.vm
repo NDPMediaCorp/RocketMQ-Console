@@ -1,9 +1,9 @@
-<!-- <div id="footer">
-	<div class="container">-->
+<div id="footer">
+	<div class="container">
     <center>
     	Powered by <a href="http://getbootstrap.com/" target="_blank">Bootstrap</a>, 
     	<a href="http://velocity.apache.org/" target="_blank">Velocity</a>,
     	<a href="http://www.springsource.org/" target="_blank">Spring</a>  etc.
     </center>
-	<!-- </div>
-</div> -->
+	</div>
+</div>

@@ -1,21 +1,23 @@
 package com.alibaba.rocketmq.service;
 
-import java.util.ArrayList;
+import static com.alibaba.rocketmq.common.Tool.str;
+
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.rocketmq.common.Table;
 import com.alibaba.rocketmq.common.protocol.body.ClusterInfo;
 import com.alibaba.rocketmq.common.protocol.body.KVTable;
 import com.alibaba.rocketmq.common.protocol.route.BrokerData;
-import com.alibaba.rocketmq.domain.ClusterBean;
-import com.alibaba.rocketmq.domain.ClusterBean.BrokerBase;
-import com.alibaba.rocketmq.domain.ClusterBean.BrokerBase.BrokerEntity;
 import com.alibaba.rocketmq.tools.admin.DefaultMQAdminExt;
+import com.alibaba.rocketmq.tools.command.cluster.ClusterListSubCommand;
+import com.alibaba.rocketmq.validate.CmdTrace;
 
 
 /**
@@ -25,29 +27,30 @@ import com.alibaba.rocketmq.tools.admin.DefaultMQAdminExt;
  * @date 2014-2-8
  */
 @Service
-public class ClusterService {
+public class ClusterService extends AbstractService {
 
-    public List<ClusterBean> list() throws Exception {
+    static final Logger logger = LoggerFactory.getLogger(ClusterService.class);
 
-        DefaultMQAdminExt defaultMQAdminExt = new DefaultMQAdminExt();
-        defaultMQAdminExt.setInstanceName(Long.toString(System.currentTimeMillis()));
-        List<ClusterBean> result = null;
 
+    @CmdTrace(cmdClazz = ClusterListSubCommand.class)
+    public Table list() {
+        DefaultMQAdminExt defaultMQAdminExt = getDefaultMQAdminExt();
         try {
             defaultMQAdminExt.start();
-            result = doList(defaultMQAdminExt);
+            Table table = doList(defaultMQAdminExt);
+            return table;
         }
         catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         finally {
-            defaultMQAdminExt.shutdown();
+            shutdownDefaultMQAdminExt(defaultMQAdminExt);
         }
-        return result;
+        return null;
     }
 
 
-    private List<ClusterBean> doList(DefaultMQAdminExt defaultMQAdminExt) throws Exception {
+    private Table doList(DefaultMQAdminExt defaultMQAdminExt) throws Exception {
 
         ClusterInfo clusterInfoSerializeWrapper = defaultMQAdminExt.examineBrokerClusterInfo();
         // System.out.printf("%-16s  %-32s  %-4s  %-22s %-22s %11s %11s\n",//
@@ -59,39 +62,49 @@ public class ClusterService {
         // "#InTPS",//
         // "#OutTPS"//
         // );
+        // String[] thead =
+        // new String[] { "#Cluster Name", "#Broker Name", "#BID", "#Addr",
+        // "#Version", "#InTPS",
+        // "#OutTPS", "#InTotalYest", "#OutTotalYest", "#InTotalToday",
+        // "#OutTotalToday" };
+        String[] instanceThead =
+                new String[] { "#BID", "#Addr", "#Version", "#InTPS", "#OutTPS", "#InTotalYest",
+                              "#OutTotalYest", "#InTotalToday", "#OutTotalToday" };
 
-        List<ClusterBean> result = new ArrayList<ClusterBean>();
+        Set<Map.Entry<String, Set<String>>> clusterSet =
+                clusterInfoSerializeWrapper.getClusterAddrTable().entrySet();
 
-        Iterator<Map.Entry<String, Set<String>>> itCluster =
-                clusterInfoSerializeWrapper.getClusterAddrTable().entrySet().iterator();
+        int clusterRow = clusterSet.size();
+        Table clusterTable = new Table(new String[] { "#Cluster Name", "#Broker Detail" }, clusterRow);
+        Iterator<Map.Entry<String, Set<String>>> itCluster = clusterSet.iterator();
+
         while (itCluster.hasNext()) {
             Map.Entry<String, Set<String>> next = itCluster.next();
             String clusterName = next.getKey();
             Set<String> brokerNameSet = new HashSet<String>();
             brokerNameSet.addAll(next.getValue());
 
-            ClusterBean clusterBean = new ClusterBean();//
-            clusterBean.setClusterName(clusterName);//
-            Set<BrokerBase> brokerBaseSet = new HashSet<BrokerBase>();//
-            clusterBean.setBrokerBaseSet(brokerBaseSet);
-            ;//
-
-            result.add(clusterBean);//
+            Object[] clusterTR = clusterTable.createTR();
+            clusterTR[0] = clusterName;
+            Table brokerTable =
+                    new Table(new String[] { "#Broker Name", "#Broker Instance" }, brokerNameSet.size());
+            clusterTR[1] = brokerTable;
+            clusterTable.insertTR(clusterTR);// A
 
             for (String brokerName : brokerNameSet) {
-                BrokerBase brokerBase = new BrokerBase();//
-                brokerBase.setBrokerName(brokerName);//
-                Set<BrokerEntity> brokerEntitySet = new HashSet<BrokerEntity>();//
-                brokerBase.setBrokerEntitySet(brokerEntitySet);//
-
-                brokerBaseSet.add(brokerBase);//
-
+                Object[] brokerTR = brokerTable.createTR();
+                brokerTR[0] = brokerName;
                 BrokerData brokerData = clusterInfoSerializeWrapper.getBrokerAddrTable().get(brokerName);
                 if (brokerData != null) {
-                    Iterator<Map.Entry<Long, String>> itAddr =
-                            brokerData.getBrokerAddrs().entrySet().iterator();
-                    while (itAddr.hasNext()) {
+                    Set<Map.Entry<Long, String>> brokerAddrSet = brokerData.getBrokerAddrs().entrySet();
+                    Iterator<Map.Entry<Long, String>> itAddr = brokerAddrSet.iterator();
 
+                    Table instanceTable = new Table(instanceThead, brokerAddrSet.size());
+                    brokerTR[1] = instanceTable;
+                    brokerTable.insertTR(brokerTR);// B
+
+                    while (itAddr.hasNext()) {
+                        Object[] instanceTR = instanceTable.createTR();
                         Map.Entry<Long, String> next1 = itAddr.next();
                         double in = 0;
                         double out = 0;
@@ -121,14 +134,11 @@ public class ClusterService {
                                 }
                             }
 
-                            BrokerEntity brokerEntity = new BrokerEntity();//
-                            brokerEntitySet.add(brokerEntity);//
-
-                            brokerEntity.setBid(next1.getKey().longValue());//
-                            brokerEntity.setAddr(next1.getValue());//
-                            brokerEntity.setVersion(version);//
-                            brokerEntity.setInTPS(in);//
-                            brokerEntity.setOutTPS(out);//
+                            instanceTR[0] = str(next1.getKey().longValue());
+                            instanceTR[1] = next1.getValue();
+                            instanceTR[2] = version;
+                            instanceTR[3] = str(in);
+                            instanceTR[4] = str(out);
 
                             String msgPutTotalYesterdayMorning =
                                     kvTable.getTable().get("msgPutTotalYesterdayMorning");
@@ -155,12 +165,14 @@ public class ClusterService {
                                     Long.parseLong(msgGetTotalTodayNow)
                                             - Long.parseLong(msgGetTotalTodayMorning);
 
-                            brokerEntity.setInTotalYest(InTotalYest);//
-                            brokerEntity.setOutTotalYest(OutTotalYest);
-                            brokerEntity.setInTotalToday(InTotalToday);
-                            brokerEntity.setOutTotalToday(OutTotalToday);
+                            instanceTR[5] = str(InTotalYest);
+                            instanceTR[6] = str(OutTotalYest);
+                            instanceTR[7] = str(InTotalToday);
+                            instanceTR[8] = str(OutTotalToday);
+                            instanceTable.insertTR(instanceTR);// C
                         }
                         catch (Exception e) {
+                            logger.error(e.getMessage(), e);
                         }
                         //
                         // System.out.printf("%-16s  %-32s  %-4s  %-22s %-22s %11.2f %11.2f\n",//
@@ -185,7 +197,7 @@ public class ClusterService {
                 }
             }
         }
-        return result;
+        return clusterTable;
     }
 
 }
