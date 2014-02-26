@@ -49,3 +49,5 @@
                 </div><!--/.nav-collapse -->
           </div>
     </div>
+	<!-- print msg-->
+	#printMsg($resMap)

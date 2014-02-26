@@ -33,7 +33,10 @@ import com.alibaba.rocketmq.tools.command.topic.TopicRouteSubCommand;
 import com.alibaba.rocketmq.tools.command.topic.TopicStatsSubCommand;
 import com.alibaba.rocketmq.tools.command.topic.UpdateTopicSubCommand;
 import com.alibaba.rocketmq.validate.CmdTrace;
+import com.google.common.collect.Maps;
 
+import static com.alibaba.rocketmq.common.Contants.KEY_MSG;
+import static com.alibaba.rocketmq.common.Contants.KEY_RES;
 
 /**
  * 
@@ -141,7 +144,7 @@ public class TopicService extends AbstractService {
     public Map<String, Object> update(String topic, String readQueueNums, String writeQueueNums, String perm,
             String brokerAddr, String clusterName) {
 
-        Map<String, Object> result = getRuturnValue();
+        Map<String, Object> result = Maps.newHashMap();
 
         DefaultMQAdminExt defaultMQAdminExt = getDefaultMQAdminExt();
 
@@ -204,7 +207,7 @@ public class TopicService extends AbstractService {
 
     @CmdTrace(cmdClazz = DeleteTopicSubCommand.class)
     public Map<String, Object> delete(String topicName, String clusterName) {
-        Map<String, Object> result = getRuturnValue();
+        Map<String, Object> result = Maps.newHashMap();
         DefaultMQAdminExt adminExt = getDefaultMQAdminExt();
         try {
             if (StringUtils.isNotBlank(clusterName)) {

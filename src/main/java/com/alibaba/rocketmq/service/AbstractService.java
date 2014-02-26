@@ -1,8 +1,6 @@
 package com.alibaba.rocketmq.service;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
@@ -16,11 +14,10 @@ import com.alibaba.rocketmq.tools.command.SubCommand;
 
 public abstract class AbstractService {
 
-    static final Map<String, Collection<Option>> cmd2option = new HashMap<String, Collection<Option>>();
-
     @Autowired
     ConfigureInitializer configureInitializer;
-    
+
+
     protected DefaultMQAdminExt getDefaultMQAdminExt() {
         DefaultMQAdminExt defaultMQAdminExt = new DefaultMQAdminExt();
         defaultMQAdminExt.setInstanceName(Long.toString(System.currentTimeMillis()));
@@ -34,17 +31,11 @@ public abstract class AbstractService {
 
 
     protected Collection<Option> getOptions(SubCommand subCommand) {
-        String commandName = subCommand.commandName();
-        Collection<Option> value = cmd2option.get(commandName);
-        if (value == null) {
-            Options options = new Options();
-            subCommand.buildCommandlineOptions(options);
-            @SuppressWarnings("unchecked")
-            Collection<Option> col = options.getOptions();
-            cmd2option.put(commandName, col);
-            value = cmd2option.get(commandName);
-        }
-        return value;
+        Options options = new Options();
+        subCommand.buildCommandlineOptions(options);
+        @SuppressWarnings("unchecked")
+        Collection<Option> col = options.getOptions();
+        return col;
     }
 
 
@@ -60,11 +51,4 @@ public abstract class AbstractService {
         }
     }
 
-
-    protected Map<String, Object> getRuturnValue() {
-        return new HashMap<String, Object>();
-    }
-
-    public static final String KEY_MSG = "key_msg";
-    public static final String KEY_RES = "key_res";
 }

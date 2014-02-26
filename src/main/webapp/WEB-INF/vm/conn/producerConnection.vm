@@ -3,22 +3,11 @@
 <head>
   #include("head.vm")
 </head>
-  
   <body>
-  <!-- head-->
+  <div>
   #parse("body_1.vm")
    <div class="container theme-showcase"><!-- /container  -->
-	  <form class="navbar-form navbar-left" role="search" action="producerConnection.do" method="post">
-          producerGroup:
-		  <div class="form-group">
-            <input type="text" class="form-control" placeholder="group" value="$!group" name="group">
-          </div>
-		  topicName:
-		  <div class="form-group">
-			<input type="text" class="form-control" placeholder="topicName" value="$!topicName" name="topicName">
-		  </div>
-		  <button type="submit" class="btn btn-default">Submit</button>
-      </form>
+	  #form($options $action)
    </div>
    #if($pc)
    <div class="container theme-showcase">
@@ -47,5 +36,6 @@
    </div>
    #end
    #include("foot.vm")
+   </div>
   </body>
 </html>

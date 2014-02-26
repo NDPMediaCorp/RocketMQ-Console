@@ -16,8 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.alibaba.rocketmq.common.Table;
 import com.alibaba.rocketmq.common.protocol.route.TopicRouteData;
 import com.alibaba.rocketmq.service.TopicService;
-
-
+import static com.alibaba.rocketmq.common.Contants.KEY_ACTION_RESULT;;
 /**
  * 
  * @author yankai913@gmail.com
@@ -31,6 +30,7 @@ public class TopicAction extends AbstractAction {
 
     @Autowired
     TopicService topicService;
+
 
     protected String getFlag() {
         return "topic_flag";
@@ -101,8 +101,7 @@ public class TopicAction extends AbstractAction {
 
 
     @RequestMapping(value = "/delete.do", method = RequestMethod.POST)
-    public String delete(ModelMap map, @RequestParam String clusterName,
-             @RequestParam String topic) {
+    public String delete(ModelMap map, @RequestParam String clusterName, @RequestParam String topic) {
         putPublicAttribute(map);
         Collection<Option> options = topicService.getOptionsForDelete();
         map.put("options", options);
@@ -110,11 +109,13 @@ public class TopicAction extends AbstractAction {
         addOptionValue(options, "topic", topic);
         addOptionValue(options, "clusterName", clusterName);
         try {
+            checkOptions(options);
             Map<String, Object> resMap = topicService.delete(topic, clusterName);
-            map.put(KEY_RETURN, resMap);
+            map.put(KEY_ACTION_RESULT, resMap);
         }
         catch (Exception e) {
             logger.error(e.getMessage(), e);
+            putExpMsg(e, map);
         }
         return "topic/delete";
     }
@@ -135,8 +136,7 @@ public class TopicAction extends AbstractAction {
     public String update(ModelMap map, @RequestParam String topic,
             @RequestParam(required = false) String readQueueNums,
             @RequestParam(required = false) String writeQueueNums,
-            @RequestParam(required = false) String perm, 
-            @RequestParam(required = false) String brokerAddr,
+            @RequestParam(required = false) String perm, @RequestParam(required = false) String brokerAddr,
             @RequestParam(required = false) String clusterName) {
         putPublicAttribute(map);
         Collection<Option> options = topicService.getOptionsForUpdate();
@@ -149,12 +149,14 @@ public class TopicAction extends AbstractAction {
         addOptionValue(options, "brokerAddr", brokerAddr);
         addOptionValue(options, "clusterName", clusterName);
         try {
+            checkOptions(options);
             Map<String, Object> resMap =
                     topicService.update(topic, readQueueNums, writeQueueNums, perm, brokerAddr, clusterName);
-            map.put(KEY_RETURN, resMap);
+            map.put(KEY_ACTION_RESULT, resMap);
         }
         catch (Exception e) {
             logger.error(e.getMessage(), e);
+            putExpMsg(e, map);
         }
         return "topic/update";
     }

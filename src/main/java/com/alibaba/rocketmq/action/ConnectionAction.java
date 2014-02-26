@@ -1,5 +1,10 @@
 package com.alibaba.rocketmq.action;
 
+import java.util.Collection;
+
+import org.apache.commons.cli.Option;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -21,6 +26,8 @@ import com.alibaba.rocketmq.service.ConnectionService;
 @RequestMapping("/conn")
 public class ConnectionAction extends AbstractAction {
 
+    static final Logger logger = LoggerFactory.getLogger(ConnectionAction.class);
+
     @Autowired
     ConnectionService connectionService;
 
@@ -34,20 +41,28 @@ public class ConnectionAction extends AbstractAction {
     @RequestMapping(value = "/consumerConnection.do", method = RequestMethod.GET)
     public String consumerConnection(ModelMap map) {
         putPublicAttribute(map);
+        Collection<Option> options = connectionService.getOptionsForGetConsumerConnection();
+        map.put("options", options);
+        map.put("action", "consumerConnection.do");
         return "conn/consumerConnection";
     }
 
 
     @RequestMapping(value = "/consumerConnection.do", method = RequestMethod.POST)
-    public String consumerConnection(ModelMap map, @RequestParam String group) {
+    public String consumerConnection(ModelMap map, @RequestParam String consumerGroup) {
         putPublicAttribute(map);
-        map.put("group", group);
+        Collection<Option> options = connectionService.getOptionsForGetConsumerConnection();
+        map.put("options", options);
+        map.put("action", "consumerConnection.do");
+        addOptionValue(options, "consumerGroup", consumerGroup);
         try {
-            ConsumerConnection cc = connectionService.getConsumerConnection(group);
+            checkOptions(options);
+            ConsumerConnection cc = connectionService.getConsumerConnection(consumerGroup);
             map.put("cc", cc);
         }
         catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
+            putExpMsg(e, map);
         }
         return "conn/consumerConnection";
     }
@@ -56,21 +71,30 @@ public class ConnectionAction extends AbstractAction {
     @RequestMapping(value = "/producerConnection.do", method = RequestMethod.GET)
     public String producerConnection(ModelMap map) {
         putPublicAttribute(map);
+        Collection<Option> options = connectionService.getOptionsForGetProducerConnection();
+        map.put("options", options);
+        map.put("action", "producerConnection.do");
         return "conn/producerConnection";
     }
 
 
     @RequestMapping(value = "/producerConnection.do", method = RequestMethod.POST)
-    public String producerConnection(ModelMap map, @RequestParam String group, @RequestParam String topicName) {
+    public String producerConnection(ModelMap map, @RequestParam String producerGroup,
+            @RequestParam String topic) {
         putPublicAttribute(map);
-        map.put("group", group);
-        map.put("topicName", topicName);
+        Collection<Option> options = connectionService.getOptionsForGetProducerConnection();
+        map.put("options", options);
+        map.put("action", "producerConnection.do");
+        addOptionValue(options, "producerGroup", producerGroup);
+        addOptionValue(options, "topic", topic);
         try {
-            ProducerConnection pc = connectionService.getProducerConnection(group, topicName);
+            checkOptions(options);
+            ProducerConnection pc = connectionService.getProducerConnection(producerGroup, topic);
             map.put("pc", pc);
         }
         catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
+            putExpMsg(e, map);
         }
         return "conn/producerConnection";
     }

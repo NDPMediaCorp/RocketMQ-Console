@@ -3,21 +3,14 @@
 <head>
   #include("head.vm")
 </head>
-  
   <body>
-  <!-- head-->
+  <div class="container"> 
   #parse("body_1.vm")
-   <div class="container theme-showcase"><!-- /container  -->
-	  <form class="navbar-form navbar-left" role="search" action="consumerConnection.do" method="post">
-          consumerGroup:
-		  <div class="form-group">
-            <input type="text" class="form-control" placeholder="group" value="$!group" name="group">
-          </div>
-		  <button type="submit" class="btn btn-default">Submit</button>
-      </form>
-   </div>
-   #if($cc)
-   <div class="container theme-showcase">
+  <div class="container theme-showcase">
+	 #form($options $action)
+  </div>
+  #if($cc)
+  <div class="container theme-showcase">
 		<table class="table table-bordered table-hover">  
               <thead>  
                 <tr>  
@@ -65,5 +58,6 @@
    </div>
    #end
    #include("foot.vm")
+   </div>
   </body>
 </html>

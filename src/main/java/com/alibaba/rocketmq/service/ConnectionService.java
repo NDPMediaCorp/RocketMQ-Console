@@ -1,10 +1,18 @@
 package com.alibaba.rocketmq.service;
 
+import java.util.Collection;
+
+import org.apache.commons.cli.Option;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.rocketmq.common.protocol.body.ConsumerConnection;
 import com.alibaba.rocketmq.common.protocol.body.ProducerConnection;
 import com.alibaba.rocketmq.tools.admin.DefaultMQAdminExt;
+import com.alibaba.rocketmq.tools.command.connection.ConsumerConnectionSubCommand;
+import com.alibaba.rocketmq.tools.command.connection.ProducerConnectionSubCommand;
+import com.alibaba.rocketmq.validate.CmdTrace;
 
 
 /**
@@ -13,40 +21,56 @@ import com.alibaba.rocketmq.tools.admin.DefaultMQAdminExt;
  * @date 2014-2-16
  */
 @Service
-public class ConnectionService {
+public class ConnectionService extends AbstractService {
+    static final Logger logger = LoggerFactory.getLogger(ConnectionService.class);
 
-    public ConsumerConnection getConsumerConnection(String group) throws Exception {
-        ConsumerConnection cc = null;
-        DefaultMQAdminExt defaultMQAdminExt = new DefaultMQAdminExt();
-        defaultMQAdminExt.setInstanceName(Long.toString(System.currentTimeMillis()));
-        try {
-            defaultMQAdminExt.start();
-            cc = defaultMQAdminExt.examineConsumerConnectionInfo(group);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        finally {
-            defaultMQAdminExt.shutdown();
-        }
-        return cc;
+    static final ConsumerConnectionSubCommand consumerConnectionSubCommand =
+            new ConsumerConnectionSubCommand();
+
+
+    public Collection<Option> getOptionsForGetConsumerConnection() {
+        return getOptions(consumerConnectionSubCommand);
     }
 
 
-    public ProducerConnection getProducerConnection(String group, String topicName) throws Exception {
-        DefaultMQAdminExt defaultMQAdminExt = new DefaultMQAdminExt();
-        defaultMQAdminExt.setInstanceName(Long.toString(System.currentTimeMillis()));
-        ProducerConnection pc = null;
+    @CmdTrace(cmdClazz = ConsumerConnectionSubCommand.class)
+    public ConsumerConnection getConsumerConnection(String consumerGroup) {
+        DefaultMQAdminExt defaultMQAdminExt = getDefaultMQAdminExt();
         try {
             defaultMQAdminExt.start();
-            pc = defaultMQAdminExt.examineProducerConnectionInfo(group, topicName);
+            ConsumerConnection cc = defaultMQAdminExt.examineConsumerConnectionInfo(consumerGroup);
+            return cc;
         }
         catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         finally {
-            defaultMQAdminExt.shutdown();
+            shutdownDefaultMQAdminExt(defaultMQAdminExt);
         }
-        return pc;
+        return null;
+    }
+
+    static final ProducerConnectionSubCommand producerConnectionSubCommand =
+            new ProducerConnectionSubCommand();
+    
+    public Collection<Option> getOptionsForGetProducerConnection() {
+        return getOptions(producerConnectionSubCommand);
+    }
+    
+    @CmdTrace(cmdClazz = ProducerConnectionSubCommand.class)
+    public ProducerConnection getProducerConnection(String group, String topicName) {
+        DefaultMQAdminExt defaultMQAdminExt = getDefaultMQAdminExt();
+        try {
+            defaultMQAdminExt.start();
+            ProducerConnection pc = defaultMQAdminExt.examineProducerConnectionInfo(group, topicName);
+            return pc;
+        }
+        catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+        finally {
+            shutdownDefaultMQAdminExt(defaultMQAdminExt);
+        }
+        return null;
     }
 }

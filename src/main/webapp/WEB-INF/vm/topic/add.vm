@@ -6,7 +6,6 @@
     <body>
 	<div class="container">
        #parse("body_1.vm")
-	   #printMsg($resMap)
        <div class="container theme-showcase">
     		#form($options $action)
        </div>

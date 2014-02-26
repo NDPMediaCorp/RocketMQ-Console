@@ -1,13 +1,20 @@
 package com.alibaba.rocketmq.action;
 
+import static com.alibaba.rocketmq.common.Contants.KEY_ACTION_RESULT;
+import static com.alibaba.rocketmq.common.Contants.KEY_MSG;
+import static com.alibaba.rocketmq.common.Contants.KEY_RES;
+
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.cli.Option;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.ui.ModelMap;
+
+import com.google.common.collect.Maps;
 
 
 /**
@@ -42,7 +49,7 @@ public abstract class AbstractAction {
             return;
         }
         if (value instanceof String) {
-            String tempVal = (String)value;
+            String tempVal = (String) value;
             if (StringUtils.isBlank(tempVal)) {
                 return;
             }
@@ -54,5 +61,25 @@ public abstract class AbstractAction {
         }
     }
 
-    protected static final String KEY_RETURN = "resMap";
+
+    protected void checkOptions(Collection<Option> options) {
+        for (Option option : options) {
+            if (option.isRequired()) {
+                String value = option.getValue();
+                if (StringUtils.isBlank(value)) {
+                    throw new IllegalStateException("option: key =[" + option.getLongOpt() + "], required=["
+                            + option.isRequired() + "] is blank!");
+                }
+            }
+        }
+    }
+
+
+    protected void putExpMsg(Exception e, ModelMap map) {
+        Map<String, Object> expMap = Maps.newHashMap();
+        expMap.put(KEY_MSG, e.getMessage());
+        expMap.put(KEY_RES, false);
+        map.put(KEY_ACTION_RESULT, expMap);
+    }
+
 }
