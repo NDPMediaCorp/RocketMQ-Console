@@ -1,9 +1,12 @@
 package com.alibaba.rocketmq.action;
 
+import java.util.Collection;
 import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.cli.Option;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.ui.ModelMap;
 
 
@@ -22,7 +25,7 @@ public abstract class AbstractAction {
     }
 
 
-    public void backfillParam(HttpServletRequest request, ModelMap map) {
+    protected void backfillParam(HttpServletRequest request, ModelMap map) {
         @SuppressWarnings("unchecked")
         Enumeration<String> enumer = request.getParameterNames();
         while (enumer.hasMoreElements()) {
@@ -31,4 +34,25 @@ public abstract class AbstractAction {
             map.put(key, value);
         }
     }
+
+
+    @SuppressWarnings("unchecked")
+    protected void addOptionValue(Collection<Option> options, String key, Object value) {
+        if (value == null) {
+            return;
+        }
+        if (value instanceof String) {
+            String tempVal = (String)value;
+            if (StringUtils.isBlank(tempVal)) {
+                return;
+            }
+        }
+        for (Option opt : options) {
+            if (opt.getLongOpt().equals(key)) {
+                opt.getValuesList().add(value);
+            }
+        }
+    }
+
+    protected static final String KEY_RETURN = "resMap";
 }

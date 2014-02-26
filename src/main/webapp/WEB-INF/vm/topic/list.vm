@@ -3,15 +3,14 @@
 <head>
   #include("head.vm")
 </head>
-  
   <body>
-  <!-- head-->
+  <div class="container">
   #parse("body_1.vm")
   <div class="container">
-   <button class="btn btn-success" type="button" onclick="add()">Add</button>
+  <button class="btn btn-sm btn-success" type="button" onclick="add()">Add</button>
   </div>
   <p>&nbsp;</p>
-   <div class="container theme-showcase"><!-- /container  -->
+  <div class="container theme-showcase"><!-- /container  -->
 		<table class="table table-bordered table-hover">  
               <thead>  
                 <tr>  
@@ -19,46 +18,49 @@
 				  <th>operations</th>
                 </tr>  
               </thead>  
-              <tbody>  
-				#foreach($topicBean in $topicBeanList)
+              <tbody>
+			  #foreach($tr in $!table.tbodyData)
 					<tr>
-                        <td>$topicBean.topicName</td>
-						<td>&nbsp;&nbsp; 
-							<button class="btn btn-info" type="button" onclick="stat('$topicBean.topicName')">Stat</button>
-							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  
-							<button class="btn btn-info" type="button" onclick="route('$topicBean.topicName')">Route</button>
-							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  
-							<button class="btn btn-info" type="button" onclick="upd('$topicBean.topicName')">Update</button>
-							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-                            <button class="btn btn-danger" type="button" onclick="del('$topicBean.topicName')">Delete</button>
-							&nbsp;&nbsp;
-						</td>
-                    </tr>
-				#end
+						#foreach($topicName in $tr)
+						  <td>$topicName</td>
+						  <td> 
+							<button class="btn btn-sm btn-info" type="button" onclick="stat('$topicName')">Stat</button>
+							&nbsp;&nbsp;  
+							<button class="btn btn-sm btn-info" type="button" onclick="route('$topicName')">Route</button>
+							&nbsp;&nbsp;  
+							<button class="btn btn-sm btn-info" type="button" onclick="upd('$topicName')">Update</button>
+							&nbsp;&nbsp; 
+                            <button class="btn btn-sm btn-danger" type="button" onclick="del('$topicName')">Delete</button>
+						  </td>
+						 #end
+    				</tr>
+			  #end
               </tbody>
         </table>
    </div>
-   #include("foot.vm")
-     <script language="javascript">
-	function add() {
-		window.location.href = "add.do";
-	}
-	
-  	function stat(topicName) {
-		window.location.href = "stats.do?topicName=" + topicName;
-	}
-	
-	function route(topicName) {
-		window.location.href = "route.do?topicName=" + topicName;
-	}
-	
-	function del(topicName) {
-		window.location.href = "delete.do?topicName=" + topicName;
-	}
 
-	function upd(topicName) {
-		window.location.href = "update.do?topicName=" + topicName;
-	}
-</script>
+   #include("foot.vm")
+    <script language="javascript">
+    	function add() {
+    		window.location.href = "add.do";
+    	}
+    	
+      	function stat(topicName) {
+    		window.location.href = "stats.do?topicName=" + topicName;
+    	}
+    	
+    	function route(topicName) {
+    		window.location.href = "route.do?topicName=" + topicName;
+    	}
+    	
+    	function del(topicName) {
+    		window.location.href = "delete.do?topicName=" + topicName;
+    	}
+    
+    	function upd(topicName) {
+    		window.location.href = "update.do?topicName=" + topicName;
+    	}
+    </script>
+  </div>
   </body>
 </html>

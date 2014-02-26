@@ -1,5 +1,5 @@
 #macro ( table $table )
-	#if($!table)
+	#if($table)
         	<table class="table table-bordered table-hover">
 				#if($!table.thead)
 					<thead>
@@ -16,6 +16,7 @@
         					#foreach($td in $tr)
         						<td>
 									#if($td.getClass().getName() == "com.alibaba.rocketmq.common.Table")
+										<!-- recursive -->
 										#table($td)
 									#else
 										$td
@@ -26,7 +27,54 @@
         			#end
                   </tbody>
             </table>
+			<!-- properties-->
+			#if($!table.extData && $!table.extData.size() > 0)
+				#foreach($entry in $!table.extData.entrySet())
+					<p>$entry.key:$entry:value</p>	
+				#end
 			#end
+	#end
 #end
 
+#macro ( form $options $action )
+	<table class="table table-bordered table-hover">  
+          <tbody>  
+    		<form action="$action" method="post">
+    			#foreach($option in $options)
+        			<tr>
+                       <th>$option.longOpt:</th>
+                       <td>
+    					<input class="form-inline span2" type="text" name="$option.longOpt" 
+							#if($!option.getValue() && $!option.getValue() != "") value='$!option.getValue()' #end/>
+    					#if($option.required)
+    						<font color="red">*</font>
+    					#end&nbsp;&nbsp;<span>$option.description</span></td>
+                    </tr>
+    			#end
+    			<tr>
+                    <td colspan="2">
+    					<center>
+    						<button class="btn btn-success" type="submit" >Submit</button>
+                        </center>
+    				</td>
+                </tr>
+            </form>
+          </tbody>
+    </table>
+#end
 
+#macro ( printMsg $resMap )
+	#if($resMap)
+		<div class="container">
+            #if($resMap.key_res)
+            <div class="alert alert-success">
+                    <strong>Well done!</strong>
+            </div>
+            #else
+            <div class="alert alert-danger">
+                    <strong>Oh snap! Failed! $resMap.key_msg</strong>
+            </div>
+			#end
+        </div>
+	#end
+#end

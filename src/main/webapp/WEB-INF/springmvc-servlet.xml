@@ -36,9 +36,7 @@
 		<property name="exposeRequestAttributes" value="true" />
 		<property name="exposeSessionAttributes" value="true" />
 		<property name="contentType" value="text/html;charset=UTF-8" />
-		<!-- 
 		<property name="toolboxConfigLocation" value="/WEB-INF/velocity-toolbox.xml" />
-		 -->
 	</bean>
 
 	<bean id="exceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
