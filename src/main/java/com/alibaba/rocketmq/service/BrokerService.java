@@ -1,16 +1,23 @@
 package com.alibaba.rocketmq.service;
 
+import java.util.Collection;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.apache.commons.cli.Option;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.rocketmq.common.Table;
 import com.alibaba.rocketmq.common.protocol.body.KVTable;
 import com.alibaba.rocketmq.tools.admin.DefaultMQAdminExt;
 import com.alibaba.rocketmq.tools.command.CommandUtil;
+import com.alibaba.rocketmq.tools.command.broker.BrokerStatsSubCommand;
+import com.alibaba.rocketmq.tools.command.broker.UpdateBrokerConfigSubCommand;
+import com.alibaba.rocketmq.validate.CmdTrace;
 
 
 /**
@@ -19,11 +26,22 @@ import com.alibaba.rocketmq.tools.command.CommandUtil;
  * @date 2014-2-18
  */
 @Service
-public class BrokerService {
+public class BrokerService extends AbstractService {
 
-    public Table brokerStats(String brokerAddr) throws Exception {
-        DefaultMQAdminExt defaultMQAdminExt = new DefaultMQAdminExt();
-        defaultMQAdminExt.setInstanceName(Long.toString(System.currentTimeMillis()));
+    static final Logger logger = LoggerFactory.getLogger(BrokerService.class);
+
+    static final BrokerStatsSubCommand brokerStatsSubCommand = new BrokerStatsSubCommand();
+
+
+    public Collection<Option> getOptionsForBrokerStats() {
+        return getOptions(brokerStatsSubCommand);
+    }
+
+
+    @CmdTrace(cmdClazz = BrokerStatsSubCommand.class)
+    public Table brokerStats(String brokerAddr) throws Throwable {
+        Throwable t = null;
+        DefaultMQAdminExt defaultMQAdminExt = getDefaultMQAdminExt();
         try {
             defaultMQAdminExt.start();
             KVTable kvTable = defaultMQAdminExt.fetchBrokerRuntimeStats(brokerAddr);
@@ -31,20 +49,30 @@ public class BrokerService {
             tmp.putAll(kvTable.getTable());
             return Table.Map2VTable(tmp);
         }
-        catch (Exception e) {
-            e.printStackTrace();
+        catch (Throwable e) {
+            logger.error(e.getMessage(), e);
+            t = e;
         }
         finally {
-            defaultMQAdminExt.shutdown();
+            shutdownDefaultMQAdminExt(defaultMQAdminExt);
         }
-        return null;
+        throw t;
+    }
+
+    static final UpdateBrokerConfigSubCommand updateBrokerConfigSubCommand =
+            new UpdateBrokerConfigSubCommand();
+
+
+    public Collection<Option> getOptionsForupdateBrokerConfig() {
+        return getOptions(updateBrokerConfigSubCommand);
     }
 
 
+    @CmdTrace(cmdClazz = UpdateBrokerConfigSubCommand.class)
     public boolean updateBrokerConfig(String brokerAddr, String clusterName, String key, String value)
-            throws Exception {
-        DefaultMQAdminExt defaultMQAdminExt = new DefaultMQAdminExt();
-        defaultMQAdminExt.setInstanceName(Long.toString(System.currentTimeMillis()));
+            throws Throwable {
+        Throwable t = null;
+        DefaultMQAdminExt defaultMQAdminExt = getDefaultMQAdminExt();
         try {
             Properties properties = new Properties();
             properties.put(key, value);
@@ -52,7 +80,8 @@ public class BrokerService {
                 defaultMQAdminExt.start();
                 defaultMQAdminExt.updateBrokerConfig(brokerAddr, properties);
                 return true;
-            } else if (StringUtils.isNotBlank(clusterName)) {
+            }
+            else if (StringUtils.isNotBlank(clusterName)) {
                 defaultMQAdminExt.start();
                 Set<String> masterSet =
                         CommandUtil.fetchMasterAddrByClusterName(defaultMQAdminExt, clusterName);
@@ -61,16 +90,18 @@ public class BrokerService {
                     System.out.printf("update broker config success, %s\n", tempBrokerAddr);
                 }
                 return true;
-            } else {
-                return false;
+            }
+            else {
+                throw new IllegalStateException();
             }
         }
-        catch (Exception e) {
-            e.printStackTrace();
+        catch (Throwable e) {
+            logger.error(e.getMessage(), e);
+            t = e;
         }
         finally {
-            defaultMQAdminExt.shutdown();
+            shutdownDefaultMQAdminExt(defaultMQAdminExt);
         }
-        return false;
+        throw t;
     }
 }

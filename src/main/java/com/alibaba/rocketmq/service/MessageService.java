@@ -4,10 +4,14 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.commons.cli.Option;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.rocketmq.client.QueryResult;
@@ -20,6 +24,10 @@ import com.alibaba.rocketmq.common.message.MessageExt;
 import com.alibaba.rocketmq.common.message.MessageQueue;
 import com.alibaba.rocketmq.remoting.common.RemotingHelper;
 import com.alibaba.rocketmq.tools.admin.DefaultMQAdminExt;
+import com.alibaba.rocketmq.tools.command.message.QueryMsgByIdSubCommand;
+import com.alibaba.rocketmq.tools.command.message.QueryMsgByKeySubCommand;
+import com.alibaba.rocketmq.tools.command.message.QueryMsgByOffsetSubCommand;
+import com.alibaba.rocketmq.validate.CmdTrace;
 
 
 /**
@@ -28,12 +36,23 @@ import com.alibaba.rocketmq.tools.admin.DefaultMQAdminExt;
  * @date 2014-2-17
  */
 @Service
-public class MessageService {
+public class MessageService extends AbstractService {
 
-    public Table queryMsgById(String msgId) throws Exception {
+    static final Logger logger = LoggerFactory.getLogger(MessageService.class);
+
+    static final QueryMsgByIdSubCommand queryMsgByIdSubCommand = new QueryMsgByIdSubCommand();
+
+
+    public Collection<Option> getOptionsForQueryMsgById() {
+        return getOptions(queryMsgByIdSubCommand);
+    }
+
+
+    @CmdTrace(cmdClazz = QueryMsgByIdSubCommand.class)
+    public Table queryMsgById(String msgId) throws Throwable {
+        Throwable t = null;
         Map<String, String> map = new LinkedHashMap<String, String>();
-        DefaultMQAdminExt defaultMQAdminExt = new DefaultMQAdminExt();
-        defaultMQAdminExt.setInstanceName(Long.toString(System.currentTimeMillis()));
+        DefaultMQAdminExt defaultMQAdminExt = getDefaultMQAdminExt();
         try {
             defaultMQAdminExt.start();
             MessageExt msg = defaultMQAdminExt.viewMessage(msgId);
@@ -116,14 +135,17 @@ public class MessageService {
             // bodyTmpFilePath//
             // );
             map.put("Message Body Path:", bodyTmpFilePath);
+            return Table.Map2VTable(map);
         }
-        catch (Exception e) {
-            e.printStackTrace();
+        catch (Throwable e) {
+            logger.error(e.getMessage(), e);
+            t = e;
         }
         finally {
-            defaultMQAdminExt.shutdown();
+            shutdownDefaultMQAdminExt(defaultMQAdminExt);
+
         }
-        return Table.Map2VTable(map);
+        throw t;
     }
 
 
@@ -147,12 +169,18 @@ public class MessageService {
         }
     }
 
+    static final QueryMsgByKeySubCommand queryMsgByKeySubCommand = new QueryMsgByKeySubCommand();
 
-    public Table queryMsgByKey(String topicName, String msgKey, String fallbackHours) throws Exception {
-        DefaultMQAdminExt defaultMQAdminExt = new DefaultMQAdminExt();
 
-        defaultMQAdminExt.setInstanceName(Long.toString(System.currentTimeMillis()));
-        Table table = null;
+    public Collection<Option> getOptionsForQueryMsgByKey() {
+        return getOptions(queryMsgByKeySubCommand);
+    }
+
+
+    @CmdTrace(cmdClazz = QueryMsgByKeySubCommand.class)
+    public Table queryMsgByKey(String topicName, String msgKey, String fallbackHours) throws Throwable {
+        Throwable t = null;
+        DefaultMQAdminExt defaultMQAdminExt = getDefaultMQAdminExt();
         try {
             defaultMQAdminExt.start();
             long h = 0;
@@ -169,33 +197,44 @@ public class MessageService {
             // "#Offset");
             String[] thead = new String[] { "#Message ID", "#QID", "#Offset" };
             int row = queryResult.getMessageList().size();
-            table = new Table(thead, row);
+            Table table = new Table(thead, row);
 
             for (MessageExt msg : queryResult.getMessageList()) {
-                String[] data = new String[] { msg.getMsgId(), String.valueOf(msg.getQueueId()), String.valueOf(msg.getQueueOffset()) };
+                String[] data =
+                        new String[] { msg.getMsgId(), String.valueOf(msg.getQueueId()),
+                                      String.valueOf(msg.getQueueOffset()) };
                 table.insertTR(data);
                 // System.out.printf("%-50s %-4d %d\n", msg.getMsgId(),
                 // msg.getQueueId(), msg.getQueueOffset());
             }
-
+            return table;
         }
-        catch (Exception e) {
-            e.printStackTrace();
+        catch (Throwable e) {
+            logger.error(e.getMessage(), e);
+            t = e;
         }
         finally {
-            defaultMQAdminExt.shutdown();
+            shutdownDefaultMQAdminExt(defaultMQAdminExt);
         }
-        return table;
+        throw t;
+    }
+
+    static final QueryMsgByOffsetSubCommand queryMsgByOffsetSubCommand = new QueryMsgByOffsetSubCommand();
+
+
+    public Collection<Option> getOptionsForQueryMsgByOffset() {
+        return getOptions(queryMsgByOffsetSubCommand);
     }
 
 
-    public Table queryMsgByOffset(String topicName, String brokerName, String queueId,
-            String offset) throws Exception {
+    @CmdTrace(cmdClazz = QueryMsgByOffsetSubCommand.class)
+    public Table queryMsgByOffset(String topicName, String brokerName, String queueId, String offset)
+            throws Throwable {
+        Throwable t = null;
         DefaultMQPullConsumer defaultMQPullConsumer = new DefaultMQPullConsumer(MixAll.TOOLS_CONSUMER_GROUP);
 
         defaultMQPullConsumer.setInstanceName(Long.toString(System.currentTimeMillis()));
 
-        Table table = null;
         try {
             MessageQueue mq = new MessageQueue();
             mq.setTopic(topicName);
@@ -208,9 +247,8 @@ public class MessageService {
             if (pullResult != null) {
                 switch (pullResult.getPullStatus()) {
                 case FOUND:
-                    table = queryMsgById(pullResult.getMsgFoundList().get(0).getMsgId());
-
-                    break;
+                    Table table = queryMsgById(pullResult.getMsgFoundList().get(0).getMsgId());
+                    return table;
                 case NO_MATCHED_MSG:
                 case NO_NEW_MSG:
                 case OFFSET_ILLEGAL:
@@ -218,13 +256,17 @@ public class MessageService {
                     break;
                 }
             }
+            else {
+                throw new IllegalStateException("pullResult is null");
+            }
         }
-        catch (Exception e) {
-            e.printStackTrace();
+        catch (Throwable e) {
+            logger.error(e.getMessage(), e);
+            t = e;
         }
         finally {
             defaultMQPullConsumer.shutdown();
         }
-        return table;
+        throw t;
     }
 }

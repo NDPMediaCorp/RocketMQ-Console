@@ -1,8 +1,10 @@
 package com.alibaba.rocketmq.action;
 
-import java.util.List;
-import java.util.Map;
+import java.util.Collection;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.cli.Option;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.alibaba.rocketmq.common.Table;
 import com.alibaba.rocketmq.service.NamesrvService;
 
 
@@ -20,162 +23,174 @@ import com.alibaba.rocketmq.service.NamesrvService;
  */
 @Controller
 @RequestMapping("/namesrv")
-public class NamesrvAction {
-
-    private static final String FLAG = "namesrv_flag";
+public class NamesrvAction extends AbstractAction {
 
     @Autowired
     NamesrvService namesrvService;
 
 
-    void putPublicAttribute(ModelMap map) {
-        map.put(FLAG, "active");
+    @Override
+    protected String getFlag() {
+        return "namesrv_flag";
     }
 
 
-    @RequestMapping(value = "/updateKvConfig.do", method = RequestMethod.GET)
-    public String updateKvConfig(ModelMap map) {
-        putPublicAttribute(map);
-        return "namesrv/updateKvConfig";
-    }
-
-
-    @RequestMapping(value = "/updateKvConfig.do", method = RequestMethod.POST)
-    public String updateKvConfig(ModelMap map, @RequestParam String namespace, @RequestParam String key,
-            @RequestParam String value) {
-        putPublicAttribute(map);
-        map.put("namespace", namespace);
-        map.put("key", key);
-        map.put("value", value);
-        boolean res = false;
+    @RequestMapping(value = "/updateKvConfig.do", method = { RequestMethod.GET, RequestMethod.POST })
+    public String updateKvConfig(ModelMap map, HttpServletRequest request,
+            @RequestParam(required = false) String namespace, @RequestParam(required = false) String key,
+            @RequestParam(required = false) String value) {
+        Collection<Option> options = namesrvService.getOptionsForUpdateKvConfig();
+        putPublicAttribute(map, "updateKvConfig", options, request);
         try {
-            res = namesrvService.updateKvConfig(namespace, key, value);
+            if (request.getMethod().equals(GET)) {
+
+            }
+            else if (request.getMethod().equals(POST)) {
+                checkOptions(options);
+                namesrvService.updateKvConfig(namespace, key, value);
+                putAlertTrue(map);
+            }
+            else {
+                throwUnknowRequestMethodException(request);
+            }
         }
-        catch (Exception e) {
-            e.printStackTrace();
+        catch (Throwable e) {
+            putAlertMsg(e, map);
         }
-        map.put("msg", res);
-        return "namesrv/updateKvConfig";
+
+        return TEMPLATE;
     }
 
 
-    @RequestMapping(value = "/deleteKvConfig.do", method = RequestMethod.GET)
-    public String deleteKvConfig(ModelMap map) {
-        putPublicAttribute(map);
-        return "namesrv/deleteKvConfig";
-    }
-
-
-    @RequestMapping(value = "/deleteKvConfig.do", method = RequestMethod.POST)
-    public String deleteKvConfig(ModelMap map, @RequestParam String namespace, @RequestParam String key) {
-        putPublicAttribute(map);
-        map.put("namespace", namespace);
-        map.put("key", key);
-        boolean res = false;
+    @RequestMapping(value = "/deleteKvConfig.do", method = { RequestMethod.GET, RequestMethod.POST })
+    public String deleteKvConfig(ModelMap map, HttpServletRequest request,
+            @RequestParam(required = false) String namespace, @RequestParam(required = false) String key) {
+        Collection<Option> options = namesrvService.getOptionsForDeleteKvConfig();
+        putPublicAttribute(map, "deleteKvConfig", options, request);
         try {
-            res = namesrvService.deleteKvConfig(namespace, key);
+            if (request.getMethod().equals(GET)) {
+
+            }
+            else if (request.getMethod().equals(POST)) {
+                checkOptions(options);
+                namesrvService.deleteKvConfig(namespace, key);
+                putAlertTrue(map);
+            }
+            else {
+                throwUnknowRequestMethodException(request);
+            }
         }
-        catch (Exception e) {
-            e.printStackTrace();
+        catch (Throwable e) {
+            putAlertMsg(e, map);
         }
-        map.put("msg", res);
-        return "namesrv/deleteKvConfig";
+        return TEMPLATE;
     }
 
 
-    @RequestMapping(value = "/getProjectGroup.do", method = RequestMethod.GET)
-    public String getProjectGroup(ModelMap map) {
-        putPublicAttribute(map);
-        return "namesrv/getProjectGroup";
-    }
-
-
-    @RequestMapping(value = "/getProjectGroup.do", method = RequestMethod.POST)
-    public String getProjectGroup(ModelMap map, @RequestParam(required = false) String ip,
-            @RequestParam(required = false) String project) {
-        putPublicAttribute(map);
-        map.put("project", project);
-        map.put("ip", ip);
+    @RequestMapping(value = "/getProjectGroup.do", method = { RequestMethod.GET, RequestMethod.POST })
+    public String getProjectGroup(ModelMap map, HttpServletRequest request,
+            @RequestParam(required = false) String ip, @RequestParam(required = false) String project) {
+        Collection<Option> options = namesrvService.getOptionsForGetProjectGroup();
+        putPublicAttribute(map, "getProjectGroup", options, request);
         try {
-            String result = namesrvService.getProjectGroup(ip, project);
-            map.put("result", result);
+            if (request.getMethod().equals(GET)) {
+
+            }
+            else if (request.getMethod().equals(POST)) {
+                checkOptions(options);
+                String text = namesrvService.getProjectGroup(ip, project);
+                map.put("resultText", text);
+            }
+            else {
+                throwUnknowRequestMethodException(request);
+            }
         }
-        catch (Exception e) {
-            e.printStackTrace();
+        catch (Throwable e) {
+            putAlertMsg(e, map);
         }
-        return "namesrv/getProjectGroup";
+        return TEMPLATE;
     }
 
 
-    @RequestMapping(value = "/updateProjectGroup.do", method = RequestMethod.GET)
-    public String updateProjectGroup(ModelMap map) {
-        putPublicAttribute(map);
-        return "namesrv/updateProjectGroup";
-    }
-
-
-    @RequestMapping(value = "/updateProjectGroup.do", method = RequestMethod.POST)
-    public String updateProjectGroup(ModelMap map, @RequestParam(required = false) String ip,
-            @RequestParam(required = false) String project) {
-        putPublicAttribute(map);
-        map.put("project", project);
-        map.put("ip", ip);
-        boolean res = false;
+    @RequestMapping(value = "/updateProjectGroup.do", method = { RequestMethod.GET, RequestMethod.POST })
+    public String updateProjectGroup(ModelMap map, HttpServletRequest request,
+            @RequestParam(required = false) String ip, @RequestParam(required = false) String project) {
+        Collection<Option> options = namesrvService.getOptionsForGetProjectGroup();
+        putPublicAttribute(map, "updateProjectGroup", options, request);
         try {
-            res = namesrvService.updateProjectGroup(ip, project);
+            if (request.getMethod().equals(GET)) {
+
+            }
+            else if (request.getMethod().equals(POST)) {
+                checkOptions(options);
+                namesrvService.updateProjectGroup(ip, project);
+                putAlertTrue(map);
+            }
+            else {
+                throwUnknowRequestMethodException(request);
+            }
         }
-        catch (Exception e) {
-            e.printStackTrace();
+        catch (Throwable t) {
+            putAlertMsg(t, map);
         }
-        map.put("msg", res);
-        return "namesrv/updateProjectGroup";
+        return TEMPLATE;
     }
 
 
-    @RequestMapping(value = "/deleteProjectGroup.do", method = RequestMethod.GET)
-    public String deleteProjectGroup(ModelMap map) {
-        putPublicAttribute(map);
-        return "namesrv/deleteProjectGroup";
-    }
-
-
-    @RequestMapping(value = "/deleteProjectGroup.do", method = RequestMethod.POST)
-    public String deleteProjectGroup(ModelMap map, @RequestParam(required = false) String ip,
-            @RequestParam(required = false) String project) {
-        putPublicAttribute(map);
-        map.put("project", project);
-        map.put("ip", ip);
-        boolean res = false;
+    @RequestMapping(value = "/deleteProjectGroup.do", method = { RequestMethod.GET, RequestMethod.POST })
+    public String deleteProjectGroup(ModelMap map, HttpServletRequest request,
+            @RequestParam(required = false) String ip, @RequestParam(required = false) String project) {
+        Collection<Option> options = namesrvService.getOptionsForDeleteProjectGroup();
+        putPublicAttribute(map, "deleteProjectGroup", options, request);
         try {
-            res = namesrvService.deleteProjectGroup(ip, project);
+            if (request.getMethod().equals(GET)) {
+
+            }
+            else if (request.getMethod().equals(POST)) {
+                checkOptions(options);
+                namesrvService.deleteProjectGroup(ip, project);
+                putAlertTrue(map);
+            }
+            else {
+                throwUnknowRequestMethodException(request);
+            }
         }
-        catch (Exception e) {
-            e.printStackTrace();
+        catch (Throwable t) {
+            putAlertMsg(t, map);
         }
-        map.put("msg", res);
-        return "namesrv/deleteProjectGroup";
+        return TEMPLATE;
     }
 
 
-    @RequestMapping(value = "/wipeWritePerm.do", method = RequestMethod.GET)
-    public String wipeWritePerm(ModelMap map) {
-        putPublicAttribute(map);
-        return "namesrv/wipeWritePerm";
-    }
-
-
-    @RequestMapping(value = "/wipeWritePerm.do", method = RequestMethod.POST)
-    public String wipeWritePerm(ModelMap map, @RequestParam String brokerName) {
-        putPublicAttribute(map);
-        map.put("brokerName", brokerName);
-        List<Map<String, String>> list = null;
+    @RequestMapping(value = "/wipeWritePerm.do", method = { RequestMethod.GET, RequestMethod.POST })
+    public String wipeWritePerm(ModelMap map, HttpServletRequest request,
+            @RequestParam(required = false) String brokerName) {
+        Collection<Option> options = namesrvService.getOptionsForWipeWritePerm();
+        putPublicAttribute(map, "wipeWritePerm", options, request);
         try {
-            list = namesrvService.wipeWritePerm(brokerName);
+            if (request.getMethod().equals(GET)) {
+
+            }
+            else if (request.getMethod().equals(POST)) {
+                checkOptions(options);
+                Table table = namesrvService.wipeWritePerm(brokerName);
+                putTable(map, table);
+            }
+            else {
+                throwUnknowRequestMethodException(request);
+            }
         }
-        catch (Exception e) {
-            e.printStackTrace();
+        catch (Throwable t) {
+            putAlertMsg(t, map);
         }
-        map.put("list", list);
-        return "namesrv/wipeWritePerm";
+
+        return TEMPLATE;
     }
+
+
+    @Override
+    protected String getName() {
+        return "Namesrv";
+    }
+
 }

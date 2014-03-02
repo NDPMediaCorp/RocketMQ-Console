@@ -1,12 +1,7 @@
 package com.alibaba.rocketmq.action;
 
-import static com.alibaba.rocketmq.common.Contants.KEY_ACTION_RESULT;
-import static com.alibaba.rocketmq.common.Contants.KEY_MSG;
-import static com.alibaba.rocketmq.common.Contants.KEY_RES;
-
 import java.util.Collection;
 import java.util.Enumeration;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -14,7 +9,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.ui.ModelMap;
 
-import com.google.common.collect.Maps;
+import com.alibaba.rocketmq.common.Table;
 
 
 /**
@@ -27,19 +22,53 @@ public abstract class AbstractAction {
     protected abstract String getFlag();
 
 
-    protected void putPublicAttribute(ModelMap map) {
-        map.put(getFlag(), "active");
+    protected abstract String getName();
+
+    public static final String TITLE = "title";
+
+    public static final String BODY_PAGE = "bodyPage";
+
+    public static final String FORM_ACTION = "action";
+
+    public static final String KEY_TABLE = "table";
+
+    public static final String OPTIONS = "options";
+
+
+    protected void putTable(ModelMap map, Table table) {
+        map.put(KEY_TABLE, table);
     }
 
 
-    protected void backfillParam(HttpServletRequest request, ModelMap map) {
+    protected void putPublicAttribute(ModelMap map, String title, Collection<Option> options,
+            HttpServletRequest request) {
+        putPublicAttribute(map, title, options);
         @SuppressWarnings("unchecked")
         Enumeration<String> enumer = request.getParameterNames();
         while (enumer.hasMoreElements()) {
             String key = enumer.nextElement();
             String value = request.getParameter(key);
-            map.put(key, value);
+            addOptionValue(options, key, value);
         }
+    }
+
+
+    protected void putPublicAttribute(ModelMap map, String title, Collection<Option> options) {
+        putPublicAttribute(map, title);
+        putOptions(map, options);
+    }
+
+
+    protected void putOptions(ModelMap map, Collection<Option> options) {
+        map.put(OPTIONS, options);
+    }
+
+
+    protected void putPublicAttribute(ModelMap map, String title) {
+        map.put(getFlag(), "active");
+        map.put(TITLE, getName() + ":" + title);
+        map.put(BODY_PAGE, getName().toLowerCase() + "/" + title + ".vm");
+        map.put(FORM_ACTION, title + ".do");
     }
 
 
@@ -74,12 +103,28 @@ public abstract class AbstractAction {
         }
     }
 
+    public static final String ALERT_MSG = "alertMsg";
 
-    protected void putExpMsg(Exception e, ModelMap map) {
-        Map<String, Object> expMap = Maps.newHashMap();
-        expMap.put(KEY_MSG, e.getMessage());
-        expMap.put(KEY_RES, false);
-        map.put(KEY_ACTION_RESULT, expMap);
+
+    protected void putAlertMsg(Throwable t, ModelMap map) {
+        map.put(ALERT_MSG, t.getMessage());
     }
 
+    public static final String ALERT_TRUE = "alertTrue";
+
+
+    protected void putAlertTrue(ModelMap map) {
+        map.put(ALERT_TRUE, true);
+    }
+
+    public static final String TEMPLATE = "template";
+
+    public static final String POST = "POST";
+
+    public static final String GET = "GET";
+
+
+    protected void throwUnknowRequestMethodException(HttpServletRequest request) {
+        throw new IllegalStateException("unknown request method: " + request.getMethod());
+    }
 }

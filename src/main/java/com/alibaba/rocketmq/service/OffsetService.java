@@ -1,16 +1,23 @@
 package com.alibaba.rocketmq.service;
 
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-
-import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static com.alibaba.rocketmq.common.Tool.bool;
 import static com.alibaba.rocketmq.common.Tool.str;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
+
+import java.util.Collection;
+import java.util.List;
+
+import org.apache.commons.cli.Option;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
 import com.alibaba.rocketmq.common.Table;
 import com.alibaba.rocketmq.common.UtilAll;
 import com.alibaba.rocketmq.common.admin.RollbackStats;
 import com.alibaba.rocketmq.tools.admin.DefaultMQAdminExt;
+import com.alibaba.rocketmq.tools.command.offset.ResetOffsetByTimeSubCommand;
+import com.alibaba.rocketmq.validate.CmdTrace;
 
 
 /**
@@ -20,12 +27,23 @@ import com.alibaba.rocketmq.tools.admin.DefaultMQAdminExt;
  * @date 2014-2-19
  */
 @Service
-public class OffsetService {
+public class OffsetService extends AbstractService {
 
+    static final Logger logger = LoggerFactory.getLogger(OffsetService.class);
+
+    static final ResetOffsetByTimeSubCommand resetOffsetByTimeSubCommand = new ResetOffsetByTimeSubCommand();
+
+
+    public Collection<Option> getOptionsForResetOffsetByTime() {
+        return getOptions(resetOffsetByTimeSubCommand);
+    }
+
+
+    @CmdTrace(cmdClazz = ResetOffsetByTimeSubCommand.class)
     public Table resetOffsetByTime(String consumerGroup, String topic, String timeStampStr, String forceStr)
-            throws Exception {
-        DefaultMQAdminExt defaultMQAdminExt = new DefaultMQAdminExt();
-        defaultMQAdminExt.setInstanceName(Long.toString(System.currentTimeMillis()));
+            throws Throwable {
+        Throwable t = null;
+        DefaultMQAdminExt defaultMQAdminExt = getDefaultMQAdminExt();
         try {
             long timestamp = 0;
             try {
@@ -72,7 +90,7 @@ public class OffsetService {
                 // rollbackStats.getTimestampOffset(),//
                 // rollbackStats.getRollbackOffset() //
                 // );
-                String[] tr = table.createTR();
+                Object[] tr = table.createTR();
                 tr[0] = UtilAll.frontStringAtLeast(rollbackStats.getBrokerName(), 32);
                 tr[1] = str(rollbackStats.getQueueId());
                 tr[2] = str(rollbackStats.getBrokerOffset());
@@ -83,12 +101,13 @@ public class OffsetService {
             }
             return table;
         }
-        catch (Exception e) {
-            e.printStackTrace();
+        catch (Throwable e) {
+            logger.error(e.getMessage(), e);
+            t = e;
         }
         finally {
-            defaultMQAdminExt.shutdown();
+            shutdownDefaultMQAdminExt(defaultMQAdminExt);
         }
-        return null;
+        throw t;
     }
 }

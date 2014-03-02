@@ -1,15 +1,2 @@
-<!DOCTYPE html>
-<html lang="en">
-	<head >
-	   #include("head.vm")
-    </head>
-    <body>
-	<div class="container">
-       #parse("body_1.vm")
-       <div class="container theme-showcase">
-    		#form($options $action)
-       </div>
-       #include("foot.vm")
-    </div>
-    </body>
-</html>
+#form($options $action)
+      

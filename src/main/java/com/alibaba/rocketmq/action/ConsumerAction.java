@@ -1,5 +1,10 @@
 package com.alibaba.rocketmq.action;
 
+import java.util.Collection;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.cli.Option;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -30,64 +35,70 @@ public class ConsumerAction extends AbstractAction {
     }
 
 
-    @RequestMapping(value = "/consumerProgress.do", method = RequestMethod.GET)
-    public String consumerProgress(ModelMap map) {
-        putPublicAttribute(map);
-        return "consumer/consumerProgress";
-    }
-
-
-    @RequestMapping(value = "/consumerProgress.do", method = RequestMethod.POST)
-    public String consumerProgress(ModelMap map, @RequestParam String consumerGroup) {
-        putPublicAttribute(map);
-        map.put("consumerGroup", consumerGroup);
+    @RequestMapping(value = "/consumerProgress.do", method = { RequestMethod.GET, RequestMethod.POST })
+    public String consumerProgress(ModelMap map, HttpServletRequest request,
+            @RequestParam(required = false) String groupName) {
+        Collection<Option> options = consumerService.getOptionsForConsumerProgress();
+        putPublicAttribute(map, "consumerProgress", options, request);
         try {
-            Table table = consumerService.consumerProgress(consumerGroup);
-            map.put("result", table);
+            if (request.getMethod().equals(GET)) {
+
+            }
+            else if (request.getMethod().equals(POST)) {
+                checkOptions(options);
+                Table table = consumerService.consumerProgress(groupName);
+                putTable(map, table);
+            }
+            else {
+                throwUnknowRequestMethodException(request);
+            }
         }
-        catch (Exception e) {
-            e.printStackTrace();
+        catch (Throwable t) {
+            putAlertMsg(t, map);
         }
-        return "consumer/consumerProgress";
+        return TEMPLATE;
     }
 
 
-    @RequestMapping(value = "/deleteSubGroup.do", method = RequestMethod.GET)
-    public String deleteSubGroup(ModelMap map) {
-        putPublicAttribute(map);
-        return "consumer/deleteSubGroup";
-    }
-
-
-    @RequestMapping(value = "/deleteSubGroup.do", method = RequestMethod.POST)
-    public String deleteSubGroup(ModelMap map, @RequestParam String groupName,
+    @RequestMapping(value = "/deleteSubGroup.do", method = { RequestMethod.GET, RequestMethod.POST })
+    public String deleteSubGroup(ModelMap map, HttpServletRequest request,
+            @RequestParam(required = false) String groupName,
             @RequestParam(required = false) String brokerAddr,
             @RequestParam(required = false) String clusterName) {
-        putPublicAttribute(map);
-        map.put("groupName", groupName);
-        map.put("brokerAddr", brokerAddr);
-        map.put("clusterName", clusterName);
-        boolean result = false;
+        Collection<Option> options = consumerService.getOptionsForDeleteSubGroup();
+        putPublicAttribute(map, "deleteSubGroup", options, request);
         try {
-            result = consumerService.deleteSubGroup(groupName, brokerAddr, clusterName);
+            if (request.getMethod().equals(GET)) {
+
+            }
+            else if (request.getMethod().equals(POST)) {
+                checkOptions(options);
+                consumerService.deleteSubGroup(groupName, brokerAddr, clusterName);
+                putAlertTrue(map);
+            }
+            else {
+                throwUnknowRequestMethodException(request);
+            }
         }
-        catch (Exception e) {
-            e.printStackTrace();
+        catch (Throwable t) {
+            putAlertMsg(t, map);
         }
-        map.put("msg", result);
-        return "consumer/deleteSubGroup";
+        return TEMPLATE;
     }
 
 
     @RequestMapping(value = "/updateSubGroup.do", method = RequestMethod.GET)
     public String updateSubGroup(ModelMap map) {
-        putPublicAttribute(map);
-        return "consumer/updateSubGroup";
+        putPublicAttribute(map, "updateSubGroup");
+        Collection<Option> options = consumerService.getOptionsForUpdateSubGroup();
+        map.put("options", options);
+        return TEMPLATE;
     }
 
 
-    @RequestMapping(value = "/updateSubGroup.do", method = RequestMethod.POST)
-    public String updateSubGroup(ModelMap map, @RequestParam(required = false) String brokerAddr,
+    @RequestMapping(value = "/updateSubGroup.do", method = { RequestMethod.GET, RequestMethod.POST })
+    public String updateSubGroup(ModelMap map, HttpServletRequest request,
+            @RequestParam(required = false) String brokerAddr,
             @RequestParam(required = false) String clusterName,
             @RequestParam(required = false) String groupName,
             @RequestParam(required = false) String consumeEnable,
@@ -97,29 +108,32 @@ public class ConsumerAction extends AbstractAction {
             @RequestParam(required = false) String retryMaxTimes,
             @RequestParam(required = false) String brokerId,
             @RequestParam(required = false) String whichBrokerWhenConsumeSlowly) {
-        putPublicAttribute(map);
-        map.put("brokerAddr", brokerAddr);
-        map.put("clusterName", clusterName);
-        map.put("groupName", groupName);
-        map.put("consumeEnable", consumeEnable);
-        map.put("consumeFromMinEnable", consumeFromMinEnable);
-        map.put("consumeBroadcastEnable", consumeBroadcastEnable);
-        map.put("retryQueueNums", retryQueueNums);
-        map.put("retryMaxTimes", retryMaxTimes);
-        map.put("brokerId", brokerId);
-        map.put("whichBrokerWhenConsumeSlowly", whichBrokerWhenConsumeSlowly);
-        boolean result = false;
+        Collection<Option> options = consumerService.getOptionsForUpdateSubGroup();
+        putPublicAttribute(map, "updateSubGroup", options, request);
         try {
-            result =
-                    consumerService.updateSubGroup(brokerAddr, clusterName, groupName, consumeEnable,
-                        consumeFromMinEnable, consumeBroadcastEnable, retryQueueNums, retryMaxTimes,
-                        brokerId, whichBrokerWhenConsumeSlowly);
+            if (request.getMethod().equals(GET)) {
+
+            }
+            else if (request.getMethod().equals(POST)) {
+                checkOptions(options);
+                consumerService.updateSubGroup(brokerAddr, clusterName, groupName, consumeEnable,
+                    consumeFromMinEnable, consumeBroadcastEnable, retryQueueNums, retryMaxTimes, brokerId,
+                    whichBrokerWhenConsumeSlowly);
+                putAlertTrue(map);
+            }
+            else {
+                throwUnknowRequestMethodException(request);
+            }
         }
-        catch (Exception e) {
-            e.printStackTrace();
+        catch (Throwable t) {
+            putAlertMsg(t, map);
         }
-        map.put("msg", result);
-        return "consumer/updateSubGroup";
+        return TEMPLATE;
     }
 
+
+    @Override
+    protected String getName() {
+        return "Consumer";
+    }
 }

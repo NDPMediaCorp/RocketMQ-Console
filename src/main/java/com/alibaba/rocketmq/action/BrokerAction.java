@@ -1,5 +1,10 @@
 package com.alibaba.rocketmq.action;
 
+import java.util.Collection;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.cli.Option;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -24,51 +29,60 @@ public class BrokerAction extends AbstractAction {
     }
 
 
-    @RequestMapping(value = "/brokerStats.do", method = RequestMethod.GET)
-    public String brokerStats(ModelMap map) {
-        putPublicAttribute(map);
-        return "broker/brokerStats";
-    }
-
-
-    @RequestMapping(value = "/brokerStats.do", method = RequestMethod.POST)
-    public String brokerStats(ModelMap map, @RequestParam String brokerAddr) {
-        putPublicAttribute(map);
-        map.put("brokerAddr", brokerAddr);
-        Table table = null;
+    @RequestMapping(value = "/brokerStats.do", method = { RequestMethod.GET, RequestMethod.POST })
+    public String brokerStats(ModelMap map, HttpServletRequest request,
+            @RequestParam(required = false) String brokerAddr) {
+        Collection<Option> options = brokerService.getOptionsForBrokerStats();
+        putPublicAttribute(map, "brokerStats", options, request);
         try {
-            table = brokerService.brokerStats(brokerAddr);
+            if (request.getMethod().equals(GET)) {
+
+            }
+            else if (request.getMethod().equals(POST)) {
+                checkOptions(options);
+                Table table = brokerService.brokerStats(brokerAddr);
+                putTable(map, table);
+            }
+            else {
+                throwUnknowRequestMethodException(request);
+            }
         }
-        catch (Exception e) {
-            e.printStackTrace();
+        catch (Throwable t) {
+            putAlertMsg(t, map);
         }
-        map.put("table", table);
-        return "broker/brokerStats";
+        return TEMPLATE;
     }
 
 
-    @RequestMapping(value = "/updateBrokerConfig.do", method = RequestMethod.GET)
-    public String updateBrokerConfig(ModelMap map) {
-        putPublicAttribute(map);
-        return "broker/updateBrokerConfig";
-    }
-    
-    @RequestMapping(value = "/updateBrokerConfig.do", method = RequestMethod.POST)
-    public String updateBrokerConfig(ModelMap map, @RequestParam String brokerAddr,
-            @RequestParam String clusterName, String key, String value) {
-        putPublicAttribute(map);
-        map.put("brokerAddr", brokerAddr);
-        map.put("clusterName", clusterName);
-        map.put("key", key);
-        map.put("value", value);
-        boolean msg = false;
+    @RequestMapping(value = "/updateBrokerConfig.do", method = { RequestMethod.GET, RequestMethod.POST })
+    public String updateBrokerConfig(ModelMap map, HttpServletRequest request,
+            @RequestParam(required = false) String brokerAddr,
+            @RequestParam(required = false) String clusterName, @RequestParam(required = false) String key,
+            @RequestParam(required = false) String value) {
+        Collection<Option> options = brokerService.getOptionsForupdateBrokerConfig();
+        putPublicAttribute(map, "updateBrokerConfig", options, request);
         try {
-            msg = brokerService.updateBrokerConfig(brokerAddr, clusterName, key, value);
+            if (request.getMethod().equals(GET)) {
+
+            }
+            else if (request.getMethod().equals(POST)) {
+                checkOptions(options);
+                brokerService.updateBrokerConfig(brokerAddr, clusterName, key, value);
+                putAlertTrue(map);
+            }
+            else {
+                throwUnknowRequestMethodException(request);
+            }
         }
-        catch (Exception e) {
-            e.printStackTrace();
+        catch (Throwable t) {
+            putAlertMsg(t, map);
         }
-        map.put("msg", msg);
-        return "broker/updateBrokerConfig";
+        return TEMPLATE;
+    }
+
+
+    @Override
+    protected String getName() {
+        return "Broker";
     }
 }

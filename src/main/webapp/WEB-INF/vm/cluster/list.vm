@@ -1,15 +1,1 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-    #include("head.vm")
-    </head>
-	<body>
-	<div class="container">
-    	#parse("body_1.vm")
-        <div class="container theme-showcase"><!-- /container  -->
-        	#table($table)
-        </div> <!-- /container -->
-    	#include("foot.vm")
-    </div>
-    </body>
-</html>
+#table($table)

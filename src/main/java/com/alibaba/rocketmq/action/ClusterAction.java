@@ -1,7 +1,5 @@
 package com.alibaba.rocketmq.action;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -21,8 +19,6 @@ import com.alibaba.rocketmq.service.ClusterService;
 @RequestMapping("/cluster")
 public class ClusterAction extends AbstractAction {
 
-    static final Logger logger = LoggerFactory.getLogger(ClusterAction.class);
-
     @Autowired
     ClusterService clusterService;
 
@@ -33,16 +29,29 @@ public class ClusterAction extends AbstractAction {
     }
 
 
+    @Override
+    protected String getName() {
+        return "Cluster";
+    }
+
+
     @RequestMapping(value = "/list.do", method = RequestMethod.GET)
     public String list(ModelMap map) {
-        putPublicAttribute(map);
+        putPublicAttribute(map, "list");
         try {
             Table table = clusterService.list();
             map.put("table", table);
         }
-        catch (Exception e) {
-            logger.error(e.getMessage(), e);
+        catch (Throwable t) {
+            putAlertMsg(t, map);
         }
-        return "cluster/list";
+        return TEMPLATE;
     }
+
+
+    @RequestMapping(value = "/demo.do", method = RequestMethod.GET)
+    public String demo() {
+        return "cluster/demo";
+    }
+
 }

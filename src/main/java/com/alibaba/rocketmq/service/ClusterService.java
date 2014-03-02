@@ -33,20 +33,22 @@ public class ClusterService extends AbstractService {
 
 
     @CmdTrace(cmdClazz = ClusterListSubCommand.class)
-    public Table list() {
+    public Table list() throws Throwable {
+        Throwable t = null;
         DefaultMQAdminExt defaultMQAdminExt = getDefaultMQAdminExt();
         try {
             defaultMQAdminExt.start();
             Table table = doList(defaultMQAdminExt);
             return table;
         }
-        catch (Exception e) {
+        catch (Throwable e) {
             logger.error(e.getMessage(), e);
+            t = e;
         }
         finally {
             shutdownDefaultMQAdminExt(defaultMQAdminExt);
         }
-        return null;
+        throw t;
     }
 
 

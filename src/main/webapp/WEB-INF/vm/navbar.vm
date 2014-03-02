@@ -11,8 +11,8 @@
                             <li class="dropdown $!connection_flag" >
                                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">Connection<b class="caret"></b></a>
                                  <ul class="dropdown-menu">
-                                    <li><a href="/conn/consumerConnection.do">ConsumerConnection</a></li>
-                                    <li><a href="/conn/producerConnection.do">ProducerConnection</a></li>
+                                    <li><a href="/connection/consumerConnection.do">ConsumerConnection</a></li>
+                                    <li><a href="/connection/producerConnection.do">ProducerConnection</a></li>
                                  </ul>
                             </li>
                 			<li class="dropdown $!namesrv_flag" >
@@ -45,9 +45,15 @@
                             <li class="dropdown $!offset_flag">
                                  <a href="/offset/resetOffsetByTime.do">Offset</a>
                             </li>
+							<li class="dropdown $!consumer_flag">
+                                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">Consumer <b class="caret"></b></a>
+                                  <ul class="dropdown-menu">
+                                    <li><a href="/consumer/consumerProgress.do">ConsumerProgress</a></li>
+                                    <li><a href="/consumer/deleteSubGroup.do">DeleteSubGroup</a></li>
+									<li><a href="/consumer/updateSubGroup.do">UpdateSubGroup</a></li>
+                                  </ul>
+                            </li>
                       </ul>
                 </div><!--/.nav-collapse -->
           </div>
     </div>
-	<!-- print msg-->
-	#printMsg($resMap)

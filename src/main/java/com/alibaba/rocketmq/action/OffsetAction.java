@@ -1,5 +1,10 @@
 package com.alibaba.rocketmq.action;
 
+import java.util.Collection;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.cli.Option;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -31,28 +36,34 @@ public class OffsetAction extends AbstractAction {
     }
 
 
-    @RequestMapping(value = "/resetOffsetByTime.do", method = RequestMethod.GET)
-    public String resetOffsetByTime(ModelMap map) {
-        putPublicAttribute(map);
-        return "offset/resetOffsetByTime";
+    @RequestMapping(value = "/resetOffsetByTime.do", method = { RequestMethod.GET, RequestMethod.POST })
+    public String resetOffsetByTime(ModelMap map, HttpServletRequest request,
+            @RequestParam(required = false) String group, @RequestParam(required = false) String topic,
+            @RequestParam(required = false) String timestamp, @RequestParam(required = false) String force) {
+        Collection<Option> options = offsetService.getOptionsForResetOffsetByTime();
+        putPublicAttribute(map, "resetOffsetByTime", options, request);
+        try {
+            if (request.getMethod().equals(GET)) {
+
+            }
+            else if (request.getMethod().equals(POST)) {
+                checkOptions(options);
+                Table table = offsetService.resetOffsetByTime(group, topic, timestamp, force);
+                putTable(map, table);
+            }
+            else {
+                throwUnknowRequestMethodException(request);
+            }
+        }
+        catch (Throwable t) {
+            putAlertMsg(t, map);
+        }
+        return TEMPLATE;
     }
 
 
-    @RequestMapping(value = "/resetOffsetByTime.do", method = RequestMethod.POST)
-    public String resetOffsetByTime(ModelMap map, @RequestParam String group, @RequestParam String topic,
-            @RequestParam String timestamp, @RequestParam(required = false) String force) {
-        putPublicAttribute(map);
-        map.put("group", group);
-        map.put("topic", topic);
-        map.put("timestamp", timestamp);
-        map.put("force", force);
-        try {
-            Table table = offsetService.resetOffsetByTime(group, topic, timestamp, force);
-            map.put("table", table);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "offset/resetOffsetByTime";
+    @Override
+    protected String getName() {
+        return "Offset";
     }
 }

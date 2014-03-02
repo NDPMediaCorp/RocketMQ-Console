@@ -3,11 +3,15 @@ package com.alibaba.rocketmq.service;
 import static com.alibaba.rocketmq.common.Tool.str;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.cli.Option;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.rocketmq.common.MQVersion;
@@ -24,19 +28,34 @@ import com.alibaba.rocketmq.common.protocol.heartbeat.MessageModel;
 import com.alibaba.rocketmq.common.subscription.SubscriptionGroupConfig;
 import com.alibaba.rocketmq.tools.admin.DefaultMQAdminExt;
 import com.alibaba.rocketmq.tools.command.CommandUtil;
+import com.alibaba.rocketmq.tools.command.consumer.ConsumerProgressSubCommand;
+import com.alibaba.rocketmq.tools.command.consumer.DeleteSubscriptionGroupCommand;
+import com.alibaba.rocketmq.tools.command.consumer.UpdateSubGroupSubCommand;
+import com.alibaba.rocketmq.validate.CmdTrace;
 
 
 /**
  * 
  * @author yankai913@gmail.com
- * @date 2014年2月18日
+ * @date 2014-2-18
  */
 @Service
-public class ConsumerService {
+public class ConsumerService extends AbstractService {
 
-    public Table consumerProgress(String consumerGroup) throws Exception {
-        DefaultMQAdminExt defaultMQAdminExt = new DefaultMQAdminExt();
-        defaultMQAdminExt.setInstanceName(Long.toString(System.currentTimeMillis()));
+    static final Logger logger = LoggerFactory.getLogger(ConsumerService.class);
+
+    static final ConsumerProgressSubCommand consumerProgressSubCommand = new ConsumerProgressSubCommand();
+
+
+    public Collection<Option> getOptionsForConsumerProgress() {
+        return getOptions(consumerProgressSubCommand);
+    }
+
+
+    @CmdTrace(cmdClazz = ConsumerProgressSubCommand.class)
+    public Table consumerProgress(String consumerGroup) throws Throwable {
+        Throwable t = null;
+        DefaultMQAdminExt defaultMQAdminExt = getDefaultMQAdminExt();
         try {
             defaultMQAdminExt.start();
             if (isNotBlank(consumerGroup)) {
@@ -72,7 +91,7 @@ public class ConsumerService {
                     // offsetWrapper.getConsumerOffset(),//
                     // diff //
                     // );
-                    String[] tr = table.createTR();
+                    Object[] tr = table.createTR();
                     tr[0] = UtilAll.frontStringAtLeast(mq.getTopic(), 32);
                     tr[1] = UtilAll.frontStringAtLeast(mq.getBrokerName(), 32);
                     tr[2] = str(mq.getQueueId());
@@ -168,7 +187,7 @@ public class ConsumerService {
                             // info.getConsumeTps(),//
                             // info.getDiffTotal()//
                             // );
-                            String[] tr = table.createTR();
+                            Object[] tr = table.createTR();
                             tr[0] = UtilAll.frontStringAtLeast(info.getGroup(), 32);
                             tr[1] = str(info.getCount());
                             tr[2] = info.versionDesc();
@@ -184,19 +203,29 @@ public class ConsumerService {
             }
 
         }
-        catch (Exception e) {
-            e.printStackTrace();
+        catch (Throwable e) {
+            logger.error(e.getMessage(), e);
+            t = e;
         }
         finally {
-            defaultMQAdminExt.shutdown();
+            shutdownDefaultMQAdminExt(defaultMQAdminExt);
         }
-        return null;
+        throw t;
+    }
+
+    static final DeleteSubscriptionGroupCommand deleteSubscriptionGroupCommand =
+            new DeleteSubscriptionGroupCommand();
+
+
+    public Collection<Option> getOptionsForDeleteSubGroup() {
+        return getOptions(deleteSubscriptionGroupCommand);
     }
 
 
-    public boolean deleteSubGroup(String groupName, String brokerAddr, String clusterName) {
-        DefaultMQAdminExt adminExt = new DefaultMQAdminExt();
-        adminExt.setInstanceName(Long.toString(System.currentTimeMillis()));
+    @CmdTrace(cmdClazz=DeleteSubscriptionGroupCommand.class)
+    public boolean deleteSubGroup(String groupName, String brokerAddr, String clusterName) throws Throwable {
+        Throwable t = null;
+        DefaultMQAdminExt adminExt = getDefaultMQAdminExt();
         try {
             if (isNotBlank(brokerAddr)) {
                 adminExt.start();
@@ -220,25 +249,34 @@ public class ConsumerService {
                 return true;
             }
             else {
-                return false;
+                throw new IllegalStateException("brokerAddr or clusterName can not be all blank");
             }
         }
-        catch (Exception e) {
-            e.printStackTrace();
+        catch (Throwable e) {
+            logger.error(e.getMessage(), e);
+            t = e;
         }
         finally {
-            adminExt.shutdown();
+            shutdownDefaultMQAdminExt(adminExt);
         }
-        return false;
+        throw t;
+    }
+
+    static final UpdateSubGroupSubCommand updateSubGroupSubCommand = new UpdateSubGroupSubCommand();
+
+
+    public Collection<Option> getOptionsForUpdateSubGroup() {
+        return getOptions(updateSubGroupSubCommand);
     }
 
 
+    @CmdTrace(cmdClazz = UpdateSubGroupSubCommand.class)
     public boolean updateSubGroup(String brokerAddr, String clusterName, String groupName,
             String consumeEnable, String consumeFromMinEnable, String consumeBroadcastEnable,
-            String retryQueueNums, String retryMaxTimes, String brokerId, String whichBrokerWhenConsumeSlowly) {
-        DefaultMQAdminExt defaultMQAdminExt = new DefaultMQAdminExt();
-
-        defaultMQAdminExt.setInstanceName(Long.toString(System.currentTimeMillis()));
+            String retryQueueNums, String retryMaxTimes, String brokerId, String whichBrokerWhenConsumeSlowly)
+            throws Throwable {
+        Throwable t = null;
+        DefaultMQAdminExt defaultMQAdminExt = getDefaultMQAdminExt();
 
         try {
             SubscriptionGroupConfig subscriptionGroupConfig = new SubscriptionGroupConfig();
@@ -297,7 +335,7 @@ public class ConsumerService {
                 return true;
 
             }
-            else if (isNotBlank(brokerAddr)) {
+            else if (isNotBlank(clusterName)) {
 
                 defaultMQAdminExt.start();
 
@@ -311,16 +349,20 @@ public class ConsumerService {
                 // System.out.println(subscriptionGroupConfig);
                 return true;
             }
+            else {
+                throw new IllegalStateException("brokerAddr or clusterName can not be all blank");
+            }
 
         }
-        catch (Exception e) {
-            e.printStackTrace();
+        catch (Throwable e) {
+            logger.error(e.getMessage(), e);
+            t = e;
         }
         finally {
-            defaultMQAdminExt.shutdown();
+            shutdownDefaultMQAdminExt(defaultMQAdminExt);
         }
 
-        return false;
+        throw t;
     }
 }
 

@@ -1,11 +1,10 @@
 package com.alibaba.rocketmq.action;
 
 import java.util.Collection;
-import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.cli.Option;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -16,7 +15,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.alibaba.rocketmq.common.Table;
 import com.alibaba.rocketmq.common.protocol.route.TopicRouteData;
 import com.alibaba.rocketmq.service.TopicService;
-import static com.alibaba.rocketmq.common.Contants.KEY_ACTION_RESULT;;
+
+
 /**
  * 
  * @author yankai913@gmail.com
@@ -25,8 +25,6 @@ import static com.alibaba.rocketmq.common.Contants.KEY_ACTION_RESULT;;
 @Controller
 @RequestMapping("/topic")
 public class TopicAction extends AbstractAction {
-
-    static final Logger logger = LoggerFactory.getLogger(TopicAction.class);
 
     @Autowired
     TopicService topicService;
@@ -37,127 +35,115 @@ public class TopicAction extends AbstractAction {
     }
 
 
+    @Override
+    protected String getName() {
+        return "Topic";
+    }
+
+
     @RequestMapping(value = "/list.do", method = RequestMethod.GET)
     public String list(ModelMap map) {
-        putPublicAttribute(map);
+        putPublicAttribute(map, "list");
         try {
             Table table = topicService.list();
-            map.put("table", table);
+            putTable(map, table);
         }
-        catch (Exception e) {
-            logger.error(e.getMessage(), e);
+        catch (Throwable t) {
+            putAlertMsg(t, map);
         }
-        return "topic/list";
+        return TEMPLATE;
     }
 
 
     @RequestMapping(value = "/stats.do", method = RequestMethod.GET)
-    public String stats(ModelMap map, @RequestParam String topicName) {
-        putPublicAttribute(map);
+    public String stats(ModelMap map, @RequestParam String topic) {
+        putPublicAttribute(map, "stats");
         try {
-            Table table = topicService.stats(topicName);
-            map.put("table", table);
+            Table table = topicService.stats(topic);
+            putTable(map, table);
         }
-        catch (Exception e) {
-            logger.error(e.getMessage(), e);
+        catch (Throwable t) {
+            putAlertMsg(t, map);
         }
-        return "topic/stats";
+        return TEMPLATE;
     }
 
 
     @RequestMapping(value = "/add.do", method = RequestMethod.GET)
     public String add(ModelMap map) {
-        putPublicAttribute(map);
+        putPublicAttribute(map, "add");
         Collection<Option> options = topicService.getOptionsForUpdate();
-        map.put("options", options);
-        map.put("action", "update.do");
-        return "topic/update";
+        putOptions(map, options);
+        map.put(FORM_ACTION, "update.do");// add as update
+        return TEMPLATE;
     }
 
 
     @RequestMapping(value = "/route.do", method = RequestMethod.GET)
-    public String route(ModelMap map, @RequestParam String topicName) {
-        putPublicAttribute(map);
+    public String route(ModelMap map, @RequestParam String topic) {
+        putPublicAttribute(map, "route");
         try {
-            TopicRouteData topicRouteData = topicService.route(topicName);
+            TopicRouteData topicRouteData = topicService.route(topic);
             map.put("topicRouteData", topicRouteData);
         }
-        catch (Exception e) {
-            logger.error(e.getMessage(), e);
+        catch (Throwable t) {
+            putAlertMsg(t, map);
         }
-        return "topic/route";
+        return TEMPLATE;
     }
 
 
-    @RequestMapping(value = "/delete.do", method = RequestMethod.GET)
-    public String delete(ModelMap map, @RequestParam String topicName) {
-        putPublicAttribute(map);
+    @RequestMapping(value = "/delete.do", method = { RequestMethod.GET, RequestMethod.POST })
+    public String delete(ModelMap map, HttpServletRequest request,
+            @RequestParam(required = false) String clusterName, @RequestParam String topic) {
         Collection<Option> options = topicService.getOptionsForDelete();
-        map.put("options", options);
-        map.put("action", "delete.do");
-        addOptionValue(options, "topic", topicName);
-        return "topic/delete";
-    }
-
-
-    @RequestMapping(value = "/delete.do", method = RequestMethod.POST)
-    public String delete(ModelMap map, @RequestParam String clusterName, @RequestParam String topic) {
-        putPublicAttribute(map);
-        Collection<Option> options = topicService.getOptionsForDelete();
-        map.put("options", options);
-        map.put("action", "delete.do");
-        addOptionValue(options, "topic", topic);
-        addOptionValue(options, "clusterName", clusterName);
+        putPublicAttribute(map, "delete", options, request);
         try {
-            checkOptions(options);
-            Map<String, Object> resMap = topicService.delete(topic, clusterName);
-            map.put(KEY_ACTION_RESULT, resMap);
+            if (request.getMethod().equals(GET)) {
+
+            }
+            else if (request.getMethod().equals(POST)) {
+                checkOptions(options);
+                topicService.delete(topic, clusterName);
+                putAlertTrue(map);
+            }
+            else {
+                throwUnknowRequestMethodException(request);
+            }
         }
-        catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            putExpMsg(e, map);
+        catch (Throwable t) {
+            putAlertMsg(t, map);
         }
-        return "topic/delete";
+        return TEMPLATE;
     }
 
 
-    @RequestMapping(value = "/update.do", method = RequestMethod.GET)
-    public String update(ModelMap map, @RequestParam String topicName) {
-        putPublicAttribute(map);
-        Collection<Option> options = topicService.getOptionsForUpdate();
-        addOptionValue(options, "topic", topicName);
-        map.put("options", options);
-        map.put("action", "update.do");
-        return "topic/update";
-    }
-
-
-    @RequestMapping(value = "/update.do", method = RequestMethod.POST)
-    public String update(ModelMap map, @RequestParam String topic,
+    @RequestMapping(value = "/update.do", method = { RequestMethod.GET, RequestMethod.POST })
+    public String update(ModelMap map, HttpServletRequest request, @RequestParam String topic,
             @RequestParam(required = false) String readQueueNums,
             @RequestParam(required = false) String writeQueueNums,
             @RequestParam(required = false) String perm, @RequestParam(required = false) String brokerAddr,
             @RequestParam(required = false) String clusterName) {
-        putPublicAttribute(map);
         Collection<Option> options = topicService.getOptionsForUpdate();
-        map.put("options", options);
-        map.put("action", "update.do");
-        addOptionValue(options, "topic", topic);
-        addOptionValue(options, "readQueueNums", readQueueNums);
-        addOptionValue(options, "writeQueueNums", writeQueueNums);
-        addOptionValue(options, "perm", perm);
-        addOptionValue(options, "brokerAddr", brokerAddr);
-        addOptionValue(options, "clusterName", clusterName);
+        putPublicAttribute(map, "update", options, request);
         try {
-            checkOptions(options);
-            Map<String, Object> resMap =
-                    topicService.update(topic, readQueueNums, writeQueueNums, perm, brokerAddr, clusterName);
-            map.put(KEY_ACTION_RESULT, resMap);
+            if (request.getMethod().equals(GET)) {
+
+            }
+            else if (request.getMethod().equals(POST)) {
+                checkOptions(options);
+                topicService.update(topic, readQueueNums, writeQueueNums, perm, brokerAddr, clusterName);
+                putAlertTrue(map);
+            }
+            else {
+                throwUnknowRequestMethodException(request);
+            }
         }
-        catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            putExpMsg(e, map);
+        catch (Throwable t) {
+            putAlertMsg(t, map);
         }
-        return "topic/update";
+
+        return TEMPLATE;
     }
+
 }

@@ -1,67 +1,53 @@
-<!DOCTYPE html>
-<html lang="en">
-	<head >
-  #include("head.vm")
-    </head>
-  
-  <body>
-  <!-- head-->
-  #parse("body_1.vm")
-   <div class="container theme-showcase"><!-- /container  -->
-		<table class="table table-bordered table-hover">  
-              <tbody>  
-					<tr>
-                        <td>brokerDatas:</td>
-						<td>
-						<table class="table table-bordered table-hover">
-    						#foreach($brokerData in $topicRouteData.brokerDatas) 
-    							<tr>
-                                    <td>brokerName:</td>
-                                    <td>
-										$brokerData.brokerName
-									</td>
-								</tr>
-								<tr>
-                                    <td>brokerAddrs:</td>
-                                    <td>
-										<table class="table table-bordered table-hover">
-											#foreach($entry in $brokerData.brokerAddrs.entrySet())
-												<tr>
-                                                    <td>$entry.key</td>
-													<td>$entry.value</td>
-												</tr>
-											#end
-                                        </table>
-									</td>
-								</tr>
-							#end
-                        </table>
-						</td>
-                    </tr>
-					<tr>
-                        <td>queueDatas:</td>
-						<td>
-							<table class="table table-bordered table-hover">
-    							#foreach($queueData in $topicRouteData.queueDatas) 
-    								<tr>
-                                        <td>brokerName</td><td>$queueData.brokerName</td>
-    								</tr>
-    								<tr>
-                                        <td>readQueueNums</td><td>$queueData.readQueueNums</td>
-    								</tr>
-    								<tr>
-                                        <td>writeQueueNums</td><td>$queueData.writeQueueNums</td>
-    								</tr>
-    								<tr>
-                                        <td>perm</td><td>$queueData.perm</td>
-    								</tr>
-								#end
-                            </table>
-						</td>
-                    </tr>
-              </tbody>
-        </table>
-   </div>
-   #include("foot.vm")
-  </body>
-</html>
+<table class="table table-bordered table-hover">  
+      <tbody>  
+			<tr>
+                <td>brokerDatas:</td>
+				<td>
+				<table class="table table-bordered table-hover">
+					#foreach($brokerData in $topicRouteData.brokerDatas) 
+						<tr>
+                            <td>brokerName:</td>
+                            <td>
+								$brokerData.brokerName
+							</td>
+						</tr>
+						<tr>
+                            <td>brokerAddrs:</td>
+                            <td>
+								<table class="table table-bordered table-hover">
+									#foreach($entry in $brokerData.brokerAddrs.entrySet())
+										<tr>
+                                            <td>$entry.key</td>
+											<td>$entry.value</td>
+										</tr>
+									#end
+                                </table>
+							</td>
+						</tr>
+					#end
+                </table>
+				</td>
+            </tr>
+			<tr>
+                <td>queueDatas:</td>
+				<td>
+					<table class="table table-bordered table-hover">
+						#foreach($queueData in $topicRouteData.queueDatas) 
+							<tr>
+                                <td>brokerName</td><td>$queueData.brokerName</td>
+							</tr>
+							<tr>
+                                <td>readQueueNums</td><td>$queueData.readQueueNums</td>
+							</tr>
+							<tr>
+                                <td>writeQueueNums</td><td>$queueData.writeQueueNums</td>
+							</tr>
+							<tr>
+                                <td>perm</td><td>$queueData.perm</td>
+							</tr>
+						#end
+                    </table>
+				</td>
+            </tr>
+      </tbody>
+</table>

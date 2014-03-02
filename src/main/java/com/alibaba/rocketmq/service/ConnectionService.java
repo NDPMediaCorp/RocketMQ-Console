@@ -34,43 +34,49 @@ public class ConnectionService extends AbstractService {
 
 
     @CmdTrace(cmdClazz = ConsumerConnectionSubCommand.class)
-    public ConsumerConnection getConsumerConnection(String consumerGroup) {
+    public ConsumerConnection getConsumerConnection(String consumerGroup) throws Throwable {
+        Throwable t = null;
         DefaultMQAdminExt defaultMQAdminExt = getDefaultMQAdminExt();
         try {
             defaultMQAdminExt.start();
             ConsumerConnection cc = defaultMQAdminExt.examineConsumerConnectionInfo(consumerGroup);
             return cc;
         }
-        catch (Exception e) {
+        catch (Throwable e) {
             logger.error(e.getMessage(), e);
+            t = e;
         }
         finally {
             shutdownDefaultMQAdminExt(defaultMQAdminExt);
         }
-        return null;
+        throw t;
     }
 
     static final ProducerConnectionSubCommand producerConnectionSubCommand =
             new ProducerConnectionSubCommand();
-    
+
+
     public Collection<Option> getOptionsForGetProducerConnection() {
         return getOptions(producerConnectionSubCommand);
     }
-    
+
+
     @CmdTrace(cmdClazz = ProducerConnectionSubCommand.class)
-    public ProducerConnection getProducerConnection(String group, String topicName) {
+    public ProducerConnection getProducerConnection(String group, String topicName) throws Throwable {
+        Throwable t = null;
         DefaultMQAdminExt defaultMQAdminExt = getDefaultMQAdminExt();
         try {
             defaultMQAdminExt.start();
             ProducerConnection pc = defaultMQAdminExt.examineProducerConnectionInfo(group, topicName);
             return pc;
         }
-        catch (Exception e) {
+        catch (Throwable e) {
             logger.error(e.getMessage(), e);
+            t = e;
         }
         finally {
             shutdownDefaultMQAdminExt(defaultMQAdminExt);
         }
-        return null;
+        throw t;
     }
 }

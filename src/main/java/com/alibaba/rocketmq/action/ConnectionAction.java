@@ -2,9 +2,9 @@ package com.alibaba.rocketmq.action;
 
 import java.util.Collection;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.cli.Option;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -23,10 +23,8 @@ import com.alibaba.rocketmq.service.ConnectionService;
  * @date 2014-2-16
  */
 @Controller
-@RequestMapping("/conn")
+@RequestMapping("/connection")
 public class ConnectionAction extends AbstractAction {
-
-    static final Logger logger = LoggerFactory.getLogger(ConnectionAction.class);
 
     @Autowired
     ConnectionService connectionService;
@@ -38,64 +36,58 @@ public class ConnectionAction extends AbstractAction {
     }
 
 
-    @RequestMapping(value = "/consumerConnection.do", method = RequestMethod.GET)
-    public String consumerConnection(ModelMap map) {
-        putPublicAttribute(map);
+    @RequestMapping(value = "/consumerConnection.do", method = { RequestMethod.GET, RequestMethod.POST })
+    public String consumerConnection(ModelMap map, HttpServletRequest request,
+            @RequestParam(required = false) String consumerGroup) {
         Collection<Option> options = connectionService.getOptionsForGetConsumerConnection();
-        map.put("options", options);
-        map.put("action", "consumerConnection.do");
-        return "conn/consumerConnection";
-    }
-
-
-    @RequestMapping(value = "/consumerConnection.do", method = RequestMethod.POST)
-    public String consumerConnection(ModelMap map, @RequestParam String consumerGroup) {
-        putPublicAttribute(map);
-        Collection<Option> options = connectionService.getOptionsForGetConsumerConnection();
-        map.put("options", options);
-        map.put("action", "consumerConnection.do");
-        addOptionValue(options, "consumerGroup", consumerGroup);
+        putPublicAttribute(map, "consumerConnection", options, request);
         try {
-            checkOptions(options);
-            ConsumerConnection cc = connectionService.getConsumerConnection(consumerGroup);
-            map.put("cc", cc);
+            if (request.getMethod().equals(GET)) {
+
+            }
+            else if (request.getMethod().equals(POST)) {
+                checkOptions(options);
+                ConsumerConnection cc = connectionService.getConsumerConnection(consumerGroup);
+                map.put("cc", cc);
+            }
+            else {
+                throwUnknowRequestMethodException(request);
+            }
         }
-        catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            putExpMsg(e, map);
+        catch (Throwable e) {
+            putAlertMsg(e, map);
         }
-        return "conn/consumerConnection";
+        return TEMPLATE;
     }
 
 
-    @RequestMapping(value = "/producerConnection.do", method = RequestMethod.GET)
-    public String producerConnection(ModelMap map) {
-        putPublicAttribute(map);
+    @RequestMapping(value = "/producerConnection.do", method = { RequestMethod.GET, RequestMethod.POST })
+    public String producerConnection(ModelMap map, HttpServletRequest request,
+            @RequestParam(required = false) String producerGroup, @RequestParam(required = false) String topic) {
         Collection<Option> options = connectionService.getOptionsForGetProducerConnection();
-        map.put("options", options);
-        map.put("action", "producerConnection.do");
-        return "conn/producerConnection";
-    }
-
-
-    @RequestMapping(value = "/producerConnection.do", method = RequestMethod.POST)
-    public String producerConnection(ModelMap map, @RequestParam String producerGroup,
-            @RequestParam String topic) {
-        putPublicAttribute(map);
-        Collection<Option> options = connectionService.getOptionsForGetProducerConnection();
-        map.put("options", options);
-        map.put("action", "producerConnection.do");
-        addOptionValue(options, "producerGroup", producerGroup);
-        addOptionValue(options, "topic", topic);
+        putPublicAttribute(map, "producerConnection", options, request);
         try {
-            checkOptions(options);
-            ProducerConnection pc = connectionService.getProducerConnection(producerGroup, topic);
-            map.put("pc", pc);
+            if (request.getMethod().equals(GET)) {
+
+            }
+            else if (request.getMethod().equals(POST)) {
+                checkOptions(options);
+                ProducerConnection pc = connectionService.getProducerConnection(producerGroup, topic);
+                map.put("pc", pc);
+            }
+            else {
+                throwUnknowRequestMethodException(request);
+            }
         }
-        catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            putExpMsg(e, map);
+        catch (Throwable e) {
+            putAlertMsg(e, map);
         }
-        return "conn/producerConnection";
+        return TEMPLATE;
+    }
+
+
+    @Override
+    protected String getName() {
+        return "Connection";
     }
 }

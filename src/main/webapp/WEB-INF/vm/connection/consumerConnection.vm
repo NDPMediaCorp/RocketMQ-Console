@@ -1,14 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  #include("head.vm")
-</head>
-  <body>
-  <div class="container"> 
-  #parse("body_1.vm")
-  <div class="container theme-showcase">
-	 #form($options $action)
-  </div>
+#form($options $action)
   #if($cc)
   <div class="container theme-showcase">
 		<table class="table table-bordered table-hover">  
@@ -57,7 +47,3 @@
 		<p>ConsumeFromWhere: $cc.consumeFromWhere</p>
    </div>
    #end
-   #include("foot.vm")
-   </div>
-  </body>
-</html>

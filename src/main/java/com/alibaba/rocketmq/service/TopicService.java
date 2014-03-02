@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.cli.Option;
@@ -33,10 +32,6 @@ import com.alibaba.rocketmq.tools.command.topic.TopicRouteSubCommand;
 import com.alibaba.rocketmq.tools.command.topic.TopicStatsSubCommand;
 import com.alibaba.rocketmq.tools.command.topic.UpdateTopicSubCommand;
 import com.alibaba.rocketmq.validate.CmdTrace;
-import com.google.common.collect.Maps;
-
-import static com.alibaba.rocketmq.common.Contants.KEY_MSG;
-import static com.alibaba.rocketmq.common.Contants.KEY_RES;
 
 /**
  * 
@@ -50,7 +45,8 @@ public class TopicService extends AbstractService {
 
 
     @CmdTrace(cmdClazz = TopicListSubCommand.class)
-    public Table list() {
+    public Table list() throws Throwable {
+        Throwable t = null;
         DefaultMQAdminExt defaultMQAdminExt = getDefaultMQAdminExt();
         try {
             defaultMQAdminExt.start();
@@ -65,19 +61,24 @@ public class TopicService extends AbstractService {
                 }
                 return table;
             }
+            else {
+                throw new IllegalStateException("defaultMQAdminExt.fetchAllTopicList() is blank");
+            }
         }
-        catch (Exception e) {
+        catch (Throwable e) {
             logger.error(e.getMessage(), e);
+            t = e;
         }
         finally {
             shutdownDefaultMQAdminExt(defaultMQAdminExt);
         }
-        return null;
+        throw t;
     }
 
 
     @CmdTrace(cmdClazz = TopicStatsSubCommand.class)
-    public Table stats(String topicName) {
+    public Table stats(String topicName) throws Throwable {
+        Throwable t = null;
         DefaultMQAdminExt defaultMQAdminExt = getDefaultMQAdminExt();
         try {
             defaultMQAdminExt.start();
@@ -123,13 +124,14 @@ public class TopicService extends AbstractService {
             }
             return table;
         }
-        catch (Exception e) {
+        catch (Throwable e) {
             logger.error(e.getMessage(), e);
+            t = e;
         }
         finally {
             shutdownDefaultMQAdminExt(defaultMQAdminExt);
         }
-        return null;
+        throw t;
     }
 
     final static UpdateTopicSubCommand updateTopicSubCommand = new UpdateTopicSubCommand();
@@ -141,11 +143,9 @@ public class TopicService extends AbstractService {
 
 
     @CmdTrace(cmdClazz = UpdateTopicSubCommand.class)
-    public Map<String, Object> update(String topic, String readQueueNums, String writeQueueNums, String perm,
-            String brokerAddr, String clusterName) {
-
-        Map<String, Object> result = Maps.newHashMap();
-
+    public boolean update(String topic, String readQueueNums, String writeQueueNums, String perm,
+            String brokerAddr, String clusterName) throws Throwable {
+        Throwable t = null;
         DefaultMQAdminExt defaultMQAdminExt = getDefaultMQAdminExt();
 
         try {
@@ -169,7 +169,7 @@ public class TopicService extends AbstractService {
             if (StringUtils.isNotBlank(brokerAddr)) {
                 defaultMQAdminExt.start();
                 defaultMQAdminExt.createAndUpdateTopicConfig(brokerAddr, topicConfig);
-                result.put(KEY_RES, true);
+                return true;
             }
             else if (StringUtils.isNotBlank(clusterName)) {
 
@@ -180,21 +180,20 @@ public class TopicService extends AbstractService {
                 for (String addr : masterSet) {
                     defaultMQAdminExt.createAndUpdateTopicConfig(addr, topicConfig);
                 }
-                result.put(KEY_RES, true);
+                return true;
             }
             else {
-                throw new IllegalStateException("clusterName or brokerAddr can not be all blank!");
+                throw new IllegalStateException("clusterName or brokerAddr can not be all blank");
             }
         }
-        catch (Exception e) {
+        catch (Throwable e) {
             logger.error(e.getMessage(), e);
-            result.put(KEY_RES, false);
-            result.put(KEY_MSG, e.getMessage());
+            t = e;
         }
         finally {
             shutdownDefaultMQAdminExt(defaultMQAdminExt);
         }
-        return result;
+        throw t;
     }
 
     final static DeleteTopicSubCommand deleteTopicSubCommand = new DeleteTopicSubCommand();
@@ -206,8 +205,8 @@ public class TopicService extends AbstractService {
 
 
     @CmdTrace(cmdClazz = DeleteTopicSubCommand.class)
-    public Map<String, Object> delete(String topicName, String clusterName) {
-        Map<String, Object> result = Maps.newHashMap();
+    public boolean delete(String topicName, String clusterName) throws Throwable {
+        Throwable t = null;
         DefaultMQAdminExt adminExt = getDefaultMQAdminExt();
         try {
             if (StringUtils.isNotBlank(clusterName)) {
@@ -220,39 +219,40 @@ public class TopicService extends AbstractService {
                     nameServerSet = new HashSet<String>(Arrays.asList(ns));
                 }
                 adminExt.deleteTopicInNameServer(nameServerSet, topicName);
-                result.put(KEY_RES, true);
+                return true;
             }
             else {
-                throw new IllegalStateException("clusterName can be blank!");
+                throw new IllegalStateException("clusterName is blank");
             }
         }
-        catch (Exception e) {
+        catch (Throwable e) {
             logger.error(e.getMessage(), e);
-            result.put(KEY_RES, false);
-            result.put(KEY_MSG, e.getMessage());
+            t = e;
         }
         finally {
             shutdownDefaultMQAdminExt(adminExt);
         }
-        return result;
+        throw t;
     }
 
 
     @CmdTrace(cmdClazz = TopicRouteSubCommand.class)
-    public TopicRouteData route(String topicName) {
+    public TopicRouteData route(String topicName) throws Throwable {
+        Throwable t = null;
         DefaultMQAdminExt adminExt = getDefaultMQAdminExt();
         try {
             adminExt.start();
             TopicRouteData topicRouteData = adminExt.examineTopicRouteInfo(topicName);
             return topicRouteData;
         }
-        catch (Exception e) {
+        catch (Throwable e) {
             logger.error(e.getMessage(), e);
+            t = e;
         }
         finally {
             shutdownDefaultMQAdminExt(adminExt);
         }
-        return null;
+        throw t;
     }
-    
+
 }

@@ -1,3 +1,4 @@
+<!-- 遍历table -->
 #macro ( table $table )
 	#if($table)
         	<table class="table table-bordered table-hover">
@@ -36,6 +37,7 @@
 	#end
 #end
 
+<!-- 动态生成form表单 -->
 #macro ( form $options $action )
 	<table class="table table-bordered table-hover">  
           <tbody>  
@@ -63,6 +65,7 @@
     </table>
 #end
 
+<!-- 打印执行结果-->
 #macro ( printMsg $resMap )
 	#if($resMap)
 		<div class="container">

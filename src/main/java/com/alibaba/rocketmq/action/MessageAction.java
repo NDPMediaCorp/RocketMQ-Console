@@ -1,6 +1,10 @@
 package com.alibaba.rocketmq.action;
 
+import java.util.Collection;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.cli.Option;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -30,77 +34,83 @@ public class MessageAction extends AbstractAction {
     }
 
 
-    @RequestMapping(value = "/queryMsgById.do", method = RequestMethod.GET)
-    public String queryMsgById(ModelMap map) {
-        putPublicAttribute(map);
-        return "message/queryMsgById";
-    }
-
-
-    @RequestMapping(value = "/queryMsgById.do", method = RequestMethod.POST)
-    public String queryMsgById(ModelMap map, @RequestParam String msgId) {
-        putPublicAttribute(map);
-        map.put("msgId", msgId);
-        Table result = null;
+    @RequestMapping(value = "/queryMsgById.do", method = { RequestMethod.GET, RequestMethod.POST })
+    public String queryMsgById(ModelMap map, HttpServletRequest request,
+            @RequestParam(required = false) String msgId) {
+        Collection<Option> options = messageService.getOptionsForQueryMsgById();
         try {
-            result = messageService.queryMsgById(msgId);
+            if (request.getMethod().equals(GET)) {
+
+            }
+            else if (request.getMethod().equals(POST)) {
+                checkOptions(options);
+                Table table = messageService.queryMsgById(msgId);
+                map.put("table", table);
+            }
+            else {
+                throwUnknowRequestMethodException(request);
+            }
         }
-        catch (Exception e) {
-            e.printStackTrace();
+        catch (Throwable t) {
+            putAlertMsg(t, map);
         }
-        map.put("result", result);
-        return "message/queryMsgById";
+        return TEMPLATE;
     }
 
 
-    @RequestMapping(value = "/queryMsgByKey.do", method = RequestMethod.GET)
-    public String queryMsgByKey(ModelMap map) {
-        putPublicAttribute(map);
-        return "message/queryMsgById";
-    }
-
-
-    @RequestMapping(value = "/queryMsgByKey.do", method = RequestMethod.POST)
-    public String queryMsgByKey(ModelMap map, @RequestParam String topicName, @RequestParam String msgKey,
-            @RequestParam String fallbackHours) {
-        putPublicAttribute(map);
-        map.put("topicName", topicName);
-        map.put("msgKey", msgKey);
-        map.put("fallbackHours", fallbackHours);
-        Table result = null;
+    @RequestMapping(value = "/queryMsgByKey.do", method = { RequestMethod.GET, RequestMethod.POST })
+    public String queryMsgByKey(ModelMap map, HttpServletRequest request,
+            @RequestParam(required = false) String topic, @RequestParam(required = false) String msgKey,
+            @RequestParam(required = false) String fallbackHours) {
+        Collection<Option> options = messageService.getOptionsForQueryMsgByKey();
+        putPublicAttribute(map, "queryMsgByKey", options, request);
         try {
-            result = messageService.queryMsgByKey(topicName, msgKey, fallbackHours);
+            if (request.getMethod().equals(GET)) {
+
+            }
+            else if (request.getMethod().equals(POST)) {
+                checkOptions(options);
+                Table table = messageService.queryMsgByKey(topic, msgKey, fallbackHours);
+                map.put("table", table);
+            }
+            else {
+                throwUnknowRequestMethodException(request);
+            }
         }
-        catch (Exception e) {
-            e.printStackTrace();
+        catch (Throwable t) {
+            putAlertMsg(t, map);
         }
-        map.put("result", result);
-        return "message/queryMsgByKey";
-    }
-    
-    @RequestMapping(value = "/queryMsgByOffset.do", method = RequestMethod.GET)
-    public String queryMsgByOffset(ModelMap map) {
-        putPublicAttribute(map);
-        return "message/queryMsgByOffset";
+        return TEMPLATE;
     }
 
 
-    @RequestMapping(value = "/queryMsgByOffset.do", method = RequestMethod.POST)
-    public String queryMsgByOffset(ModelMap map, @RequestParam String topicName, @RequestParam String brokerName,
-            @RequestParam String queueId, @RequestParam String offset) {
-        putPublicAttribute(map);
-        map.put("topicName", topicName);
-        map.put("brokerName", brokerName);
-        map.put("queueId", queueId);
-        map.put("offset", offset);
-        Table result = null;
+    @RequestMapping(value = "/queryMsgByOffset.do", method = { RequestMethod.GET, RequestMethod.POST })
+    public String queryMsgByOffset(ModelMap map, HttpServletRequest request,
+            @RequestParam(required = false) String topic, @RequestParam(required = false) String brokerName,
+            @RequestParam(required = false) String queueId, @RequestParam(required = false) String offset) {
+        Collection<Option> options = messageService.getOptionsForQueryMsgByOffset();
+        putPublicAttribute(map, "queryMsgByOffset", options, request);
         try {
-            result = messageService.queryMsgByOffset(topicName, brokerName, queueId, offset);
+            if (request.getMethod().equals(GET)) {
+
+            }
+            else if (request.getMethod().equals(POST)) {
+                Table table = messageService.queryMsgByOffset(topic, brokerName, queueId, offset);
+                map.put("table", table);
+            }
+            else {
+                throwUnknowRequestMethodException(request);
+            }
         }
-        catch (Exception e) {
-            e.printStackTrace();
+        catch (Throwable t) {
+            putAlertMsg(t, map);
         }
-        map.put("result", result);
-        return "message/queryMsgByKey";
+        return TEMPLATE;
+    }
+
+
+    @Override
+    protected String getName() {
+        return "Message";
     }
 }
