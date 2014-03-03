@@ -95,6 +95,7 @@ public class MessageAction extends AbstractAction {
 
             }
             else if (request.getMethod().equals(POST)) {
+                checkOptions(options);
                 Table table = messageService.queryMsgByOffset(topic, brokerName, queueId, offset);
                 map.put("table", table);
             }
