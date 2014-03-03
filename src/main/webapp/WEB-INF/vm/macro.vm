@@ -64,20 +64,3 @@
           </tbody>
     </table>
 #end
-
-<!-- 打印执行结果-->
-#macro ( printMsg $resMap )
-	#if($resMap)
-		<div class="container">
-            #if($resMap.key_res)
-            <div class="alert alert-success">
-                    <strong>Well done!</strong>
-            </div>
-            #else
-            <div class="alert alert-danger">
-                    <strong>Oh snap! Failed! $resMap.key_msg</strong>
-            </div>
-			#end
-        </div>
-	#end
-#end

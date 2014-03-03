@@ -47,7 +47,7 @@ public abstract class AbstractService {
             return PermName.PERM_WRITE;
         }
         else {
-            return PermName.PERM_READ & PermName.PERM_WRITE;
+            return PermName.PERM_READ | PermName.PERM_WRITE;
         }
     }
 

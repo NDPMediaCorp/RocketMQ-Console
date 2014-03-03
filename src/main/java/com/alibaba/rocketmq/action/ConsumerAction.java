@@ -87,15 +87,6 @@ public class ConsumerAction extends AbstractAction {
     }
 
 
-    @RequestMapping(value = "/updateSubGroup.do", method = RequestMethod.GET)
-    public String updateSubGroup(ModelMap map) {
-        putPublicAttribute(map, "updateSubGroup");
-        Collection<Option> options = consumerService.getOptionsForUpdateSubGroup();
-        map.put("options", options);
-        return TEMPLATE;
-    }
-
-
     @RequestMapping(value = "/updateSubGroup.do", method = { RequestMethod.GET, RequestMethod.POST })
     public String updateSubGroup(ModelMap map, HttpServletRequest request,
             @RequestParam(required = false) String brokerAddr,

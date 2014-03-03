@@ -19,4 +19,7 @@
 		<property name="namesrvAddr" value="${rocketmq.namesrv.addr}" />
 	</bean>
 
+	<bean id="cmdValidator" class="com.alibaba.rocketmq.validate.CmdValidator">
+		<property name="throwDone" value="${throwDone}" />
+	</bean>
 </beans>
