@@ -40,7 +40,7 @@ public class ClusterAction extends AbstractAction {
         putPublicAttribute(map, "list");
         try {
             Table table = clusterService.list();
-            map.put("table", table);
+            putTable(map, table);
         }
         catch (Throwable t) {
             putAlertMsg(t, map);

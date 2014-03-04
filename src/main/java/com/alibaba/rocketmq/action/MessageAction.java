@@ -45,7 +45,7 @@ public class MessageAction extends AbstractAction {
             else if (request.getMethod().equals(POST)) {
                 checkOptions(options);
                 Table table = messageService.queryMsgById(msgId);
-                map.put("table", table);
+                putTable(map, table);
             }
             else {
                 throwUnknowRequestMethodException(request);
@@ -71,7 +71,7 @@ public class MessageAction extends AbstractAction {
             else if (request.getMethod().equals(POST)) {
                 checkOptions(options);
                 Table table = messageService.queryMsgByKey(topic, msgKey, fallbackHours);
-                map.put("table", table);
+                putTable(map, table);
             }
             else {
                 throwUnknowRequestMethodException(request);
@@ -97,7 +97,7 @@ public class MessageAction extends AbstractAction {
             else if (request.getMethod().equals(POST)) {
                 checkOptions(options);
                 Table table = messageService.queryMsgByOffset(topic, brokerName, queueId, offset);
-                map.put("table", table);
+                putTable(map, table);
             }
             else {
                 throwUnknowRequestMethodException(request);

@@ -63,7 +63,7 @@ public class BrokerService extends AbstractService {
             new UpdateBrokerConfigSubCommand();
 
 
-    public Collection<Option> getOptionsForupdateBrokerConfig() {
+    public Collection<Option> getOptionsForUpdateBrokerConfig() {
         return getOptions(updateBrokerConfigSubCommand);
     }
 
@@ -86,13 +86,12 @@ public class BrokerService extends AbstractService {
                 Set<String> masterSet =
                         CommandUtil.fetchMasterAddrByClusterName(defaultMQAdminExt, clusterName);
                 for (String tempBrokerAddr : masterSet) {
-                    defaultMQAdminExt.updateBrokerConfig(brokerAddr, properties);
-                    System.out.printf("update broker config success, %s\n", tempBrokerAddr);
+                    defaultMQAdminExt.updateBrokerConfig(tempBrokerAddr, properties);
                 }
                 return true;
             }
             else {
-                throw new IllegalStateException();
+                throw new IllegalStateException("brokerAddr or clusterName can not be all blank");
             }
         }
         catch (Throwable e) {

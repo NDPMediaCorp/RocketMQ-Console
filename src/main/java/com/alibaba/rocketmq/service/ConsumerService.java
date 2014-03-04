@@ -139,8 +139,7 @@ public class ConsumerService extends AbstractService {
                                 consumeStats = defaultMQAdminExt.examineConsumeStats(tconsumerGroup);
                             }
                             catch (Exception e) {
-                                // log.warn("examineConsumeStats exception, " +
-                                // tconsumerGroup, e);
+                                logger.warn("examineConsumeStats exception, " + tconsumerGroup, e);
                             }
 
                             ConsumerConnection cc = null;
@@ -148,8 +147,7 @@ public class ConsumerService extends AbstractService {
                                 cc = defaultMQAdminExt.examineConsumerConnectionInfo(tconsumerGroup);
                             }
                             catch (Exception e) {
-                                // log.warn("examineConsumerConnectionInfo exception, "
-                                // + tconsumerGroup, e);
+                                logger.warn("examineConsumerConnectionInfo exception, " + tconsumerGroup, e);
                             }
 
                             GroupConsumeInfo groupConsumeInfo = new GroupConsumeInfo();
@@ -170,8 +168,8 @@ public class ConsumerService extends AbstractService {
                             groupConsumeInfoList.add(groupConsumeInfo);
                         }
                         catch (Exception e) {
-                            // log.warn("examineConsumeStats or examineConsumerConnectionInfo exception, "
-                            // + tconsumerGroup, e);
+                            logger.warn("examineConsumeStats or examineConsumerConnectionInfo exception, "
+                                    + tconsumerGroup, e);
                         }
                         Collections.sort(groupConsumeInfoList);
 
@@ -222,7 +220,7 @@ public class ConsumerService extends AbstractService {
     }
 
 
-    @CmdTrace(cmdClazz=DeleteSubscriptionGroupCommand.class)
+    @CmdTrace(cmdClazz = DeleteSubscriptionGroupCommand.class)
     public boolean deleteSubGroup(String groupName, String brokerAddr, String clusterName) throws Throwable {
         Throwable t = null;
         DefaultMQAdminExt adminExt = getDefaultMQAdminExt();

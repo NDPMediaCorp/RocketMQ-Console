@@ -59,7 +59,7 @@ public class BrokerAction extends AbstractAction {
             @RequestParam(required = false) String brokerAddr,
             @RequestParam(required = false) String clusterName, @RequestParam(required = false) String key,
             @RequestParam(required = false) String value) {
-        Collection<Option> options = brokerService.getOptionsForupdateBrokerConfig();
+        Collection<Option> options = brokerService.getOptionsForUpdateBrokerConfig();
         putPublicAttribute(map, "updateBrokerConfig", options, request);
         try {
             if (request.getMethod().equals(GET)) {
