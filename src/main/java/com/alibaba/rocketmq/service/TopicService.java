@@ -1,21 +1,5 @@
 package com.alibaba.rocketmq.service;
 
-import static com.alibaba.rocketmq.common.Tool.str;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.commons.cli.Option;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
 import com.alibaba.rocketmq.common.Table;
 import com.alibaba.rocketmq.common.TopicConfig;
 import com.alibaba.rocketmq.common.UtilAll;
@@ -29,9 +13,24 @@ import com.alibaba.rocketmq.tools.command.CommandUtil;
 import com.alibaba.rocketmq.tools.command.topic.DeleteTopicSubCommand;
 import com.alibaba.rocketmq.tools.command.topic.TopicListSubCommand;
 import com.alibaba.rocketmq.tools.command.topic.TopicRouteSubCommand;
-import com.alibaba.rocketmq.tools.command.topic.TopicStatsSubCommand;
+import com.alibaba.rocketmq.tools.command.topic.TopicStatusSubCommand;
 import com.alibaba.rocketmq.tools.command.topic.UpdateTopicSubCommand;
 import com.alibaba.rocketmq.validate.CmdTrace;
+import org.apache.commons.cli.Option;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
+import static com.alibaba.rocketmq.common.Tool.str;
 
 /**
  * 
@@ -76,7 +75,7 @@ public class TopicService extends AbstractService {
     }
 
 
-    @CmdTrace(cmdClazz = TopicStatsSubCommand.class)
+    @CmdTrace(cmdClazz = TopicStatusSubCommand.class)
     public Table stats(String topicName) throws Throwable {
         Throwable t = null;
         DefaultMQAdminExt defaultMQAdminExt = getDefaultMQAdminExt();

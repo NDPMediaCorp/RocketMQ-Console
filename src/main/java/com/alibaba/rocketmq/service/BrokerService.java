@@ -1,23 +1,22 @@
 package com.alibaba.rocketmq.service;
 
-import java.util.Collection;
-import java.util.Properties;
-import java.util.Set;
-import java.util.TreeMap;
-
+import com.alibaba.rocketmq.common.Table;
+import com.alibaba.rocketmq.common.protocol.body.KVTable;
+import com.alibaba.rocketmq.tools.admin.DefaultMQAdminExt;
+import com.alibaba.rocketmq.tools.command.CommandUtil;
+import com.alibaba.rocketmq.tools.command.broker.BrokerStatusSubCommand;
+import com.alibaba.rocketmq.tools.command.broker.UpdateBrokerConfigSubCommand;
+import com.alibaba.rocketmq.validate.CmdTrace;
 import org.apache.commons.cli.Option;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.alibaba.rocketmq.common.Table;
-import com.alibaba.rocketmq.common.protocol.body.KVTable;
-import com.alibaba.rocketmq.tools.admin.DefaultMQAdminExt;
-import com.alibaba.rocketmq.tools.command.CommandUtil;
-import com.alibaba.rocketmq.tools.command.broker.BrokerStatsSubCommand;
-import com.alibaba.rocketmq.tools.command.broker.UpdateBrokerConfigSubCommand;
-import com.alibaba.rocketmq.validate.CmdTrace;
+import java.util.Collection;
+import java.util.Properties;
+import java.util.Set;
+import java.util.TreeMap;
 
 
 /**
@@ -30,7 +29,7 @@ public class BrokerService extends AbstractService {
 
     static final Logger logger = LoggerFactory.getLogger(BrokerService.class);
 
-    static final BrokerStatsSubCommand brokerStatsSubCommand = new BrokerStatsSubCommand();
+    static final BrokerStatusSubCommand brokerStatsSubCommand = new BrokerStatusSubCommand();
 
 
     public Collection<Option> getOptionsForBrokerStats() {
@@ -38,7 +37,7 @@ public class BrokerService extends AbstractService {
     }
 
 
-    @CmdTrace(cmdClazz = BrokerStatsSubCommand.class)
+    @CmdTrace(cmdClazz = BrokerStatusSubCommand.class)
     public Table brokerStats(String brokerAddr) throws Throwable {
         Throwable t = null;
         DefaultMQAdminExt defaultMQAdminExt = getDefaultMQAdminExt();

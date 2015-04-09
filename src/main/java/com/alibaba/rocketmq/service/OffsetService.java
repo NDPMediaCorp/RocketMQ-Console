@@ -1,27 +1,26 @@
 package com.alibaba.rocketmq.service;
 
-import static com.alibaba.rocketmq.common.Tool.bool;
-import static com.alibaba.rocketmq.common.Tool.str;
-import static org.apache.commons.lang.StringUtils.isNotBlank;
-
-import java.util.Collection;
-import java.util.List;
-
+import com.alibaba.rocketmq.common.Table;
+import com.alibaba.rocketmq.common.UtilAll;
+import com.alibaba.rocketmq.common.admin.RollbackStats;
+import com.alibaba.rocketmq.tools.admin.DefaultMQAdminExt;
+import com.alibaba.rocketmq.tools.command.offset.ResetOffsetByTimeOldCommand;
+import com.alibaba.rocketmq.validate.CmdTrace;
 import org.apache.commons.cli.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.alibaba.rocketmq.common.Table;
-import com.alibaba.rocketmq.common.UtilAll;
-import com.alibaba.rocketmq.common.admin.RollbackStats;
-import com.alibaba.rocketmq.tools.admin.DefaultMQAdminExt;
-import com.alibaba.rocketmq.tools.command.offset.ResetOffsetByTimeSubCommand;
-import com.alibaba.rocketmq.validate.CmdTrace;
+import java.util.Collection;
+import java.util.List;
+
+import static com.alibaba.rocketmq.common.Tool.bool;
+import static com.alibaba.rocketmq.common.Tool.str;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 
 /**
- * @see com.alibaba.rocketmq.tools.command.offset.ResetOffsetByTimeSubCommand
+ * @see com.alibaba.rocketmq.tools.command.offset.ResetOffsetByTimeOldCommand
  * 
  * @author yankai913@gmail.com
  * @date 2014-2-19
@@ -31,7 +30,7 @@ public class OffsetService extends AbstractService {
 
     static final Logger logger = LoggerFactory.getLogger(OffsetService.class);
 
-    static final ResetOffsetByTimeSubCommand resetOffsetByTimeSubCommand = new ResetOffsetByTimeSubCommand();
+    static final ResetOffsetByTimeOldCommand resetOffsetByTimeSubCommand = new ResetOffsetByTimeOldCommand();
 
 
     public Collection<Option> getOptionsForResetOffsetByTime() {
@@ -39,7 +38,7 @@ public class OffsetService extends AbstractService {
     }
 
 
-    @CmdTrace(cmdClazz = ResetOffsetByTimeSubCommand.class)
+    @CmdTrace(cmdClazz = ResetOffsetByTimeOldCommand.class)
     public Table resetOffsetByTime(String consumerGroup, String topic, String timeStampStr, String forceStr)
             throws Throwable {
         Throwable t = null;
@@ -61,7 +60,7 @@ public class OffsetService extends AbstractService {
             }
             defaultMQAdminExt.start();
             List<RollbackStats> rollbackStatsList =
-                    defaultMQAdminExt.resetOffsetByTimestamp(consumerGroup, topic, timestamp, force);
+                    defaultMQAdminExt.resetOffsetByTimestampOld(consumerGroup, topic, timestamp, force);
             // System.out
             // .printf(
             // "rollback consumer offset by specified consumerGroup[%s], topic[%s], force[%s], timestamp(string)[%s], timestamp(long)[%s]\n",
