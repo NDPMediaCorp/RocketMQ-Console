@@ -1,9 +1,7 @@
 package com.alibaba.rocketmq.action;
 
-import java.util.Collection;
-
-import javax.servlet.http.HttpServletRequest;
-
+import com.alibaba.rocketmq.common.Table;
+import com.alibaba.rocketmq.service.MessageService;
 import org.apache.commons.cli.Option;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.alibaba.rocketmq.common.Table;
-import com.alibaba.rocketmq.service.MessageService;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Collection;
 
 
 /**
@@ -38,6 +36,8 @@ public class MessageAction extends AbstractAction {
     public String queryMsgById(ModelMap map, HttpServletRequest request,
             @RequestParam(required = false) String msgId) {
         Collection<Option> options = messageService.getOptionsForQueryMsgById();
+        //Bug fix.
+        putPublicAttribute(map, "queryMsgById", options, request);
         try {
             if (request.getMethod().equals(GET)) {
 
